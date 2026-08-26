@@ -1,6 +1,7 @@
 # syntax=docker.io/docker/dockerfile:1
 
-FROM node:18-alpine AS base
+# node >= 20 required (Tailwind v4 / @tailwindcss/oxide). prop-ui uses node:18 but the portal can't.
+FROM node:22-alpine AS base
 
 # Install dependencies only when needed
 FROM base AS deps
