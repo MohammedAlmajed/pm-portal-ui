@@ -1,0 +1,161 @@
+/* ============================================================================
+ * pm-portal-ui — GLOBAL STYLESHEET
+ * Order matters: Tailwind first, then our tokens, then the @theme mapping that
+ * exposes the semantic tokens to Tailwind utilities, then base + components.
+ * ========================================================================== */
+
+/* Design tokens imported first (CSS requires @import before other rules). */
+@import 'tailwindcss';
+@import './tokens.css';
+
+/* Brand font (bundled in public/fonts). tokens.css already lists it first in --pm-font-sans. */
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  src: url('/fonts/IBM_Plex_Sans_Arabic/IBMPlexSansArabic-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  src: url('/fonts/IBM_Plex_Sans_Arabic/IBMPlexSansArabic-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  src: url('/fonts/IBM_Plex_Sans_Arabic/IBMPlexSansArabic-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Sans Arabic';
+  src: url('/fonts/IBM_Plex_Sans_Arabic/IBMPlexSansArabic-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-display: swap;
+}
+
+/* RTL/logical utilities (ms-, me-, ps-, pe-, start-, end-, border-s/e) are
+ * NATIVE in Tailwind v4 with dir="rtl" — no plugin needed. */
+
+/* Dark variant keys off data-theme on <html> (set by ThemeProvider). */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/* ─── Expose semantic tokens to Tailwind v4 ──────────────────────────────────
+ * `inline` makes each utility reference the CSS var at runtime (so tenant/theme
+ * overrides cascade live) instead of baking the value in at build time.
+ * Utilities produced: bg-canvas, bg-surface, text-foreground, text-muted,
+ * border-border, bg-brand, text-brand, ring-ring, rounded-*, shadow-*, etc.
+ */
+@theme inline {
+  --color-canvas: var(--pm-canvas);
+  --color-surface: var(--pm-surface);
+  --color-surface-raised: var(--pm-surface-raised);
+  --color-surface-sunken: var(--pm-surface-sunken);
+  --color-overlay: var(--pm-overlay);
+
+  --color-foreground: var(--pm-foreground);
+  --color-muted: var(--pm-muted);
+  --color-subtle: var(--pm-subtle);
+  --color-inverse: var(--pm-inverse);
+
+  --color-border: var(--pm-border);
+  --color-border-strong: var(--pm-border-strong);
+  --color-ring: var(--pm-ring);
+
+  --color-brand: var(--pm-brand);
+  --color-brand-hover: var(--pm-brand-hover);
+  --color-brand-active: var(--pm-brand-active);
+  --color-brand-subtle: var(--pm-brand-subtle);
+  --color-brand-border: var(--pm-brand-border);
+  --color-on-brand: var(--pm-on-brand);
+
+  --color-success: var(--pm-success);
+  --color-success-subtle: var(--pm-success-subtle);
+  --color-on-success: var(--pm-on-success);
+  --color-warning: var(--pm-warning);
+  --color-warning-subtle: var(--pm-warning-subtle);
+  --color-on-warning: var(--pm-on-warning);
+  --color-danger: var(--pm-danger);
+  --color-danger-subtle: var(--pm-danger-subtle);
+  --color-on-danger: var(--pm-on-danger);
+  --color-info: var(--pm-info);
+  --color-info-subtle: var(--pm-info-subtle);
+  --color-on-info: var(--pm-on-info);
+
+  --radius-xs: var(--pm-radius-xs);
+  --radius-sm: var(--pm-radius-sm);
+  --radius-md: var(--pm-radius-md);
+  --radius-lg: var(--pm-radius-lg);
+  --radius-xl: var(--pm-radius-xl);
+  --radius-2xl: var(--pm-radius-2xl);
+
+  --shadow-sm: var(--pm-shadow-sm);
+  --shadow-md: var(--pm-shadow-md);
+  --shadow-lg: var(--pm-shadow-lg);
+
+  --font-sans: var(--pm-font-sans);
+  --font-mono: var(--pm-font-mono);
+
+  --ease-brand: var(--pm-ease);
+}
+
+/* ─── Base layer ─────────────────────────────────────────────────────────── */
+@layer base {
+  /* Tailwind v4 defaults borders to currentColor — pin to our token. */
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--pm-border);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    background-color: var(--pm-canvas);
+    color: var(--pm-foreground);
+    font-family: var(--pm-font-sans);
+    letter-spacing: -0.004em;
+  }
+
+  :is(h1, h2, h3, h4) {
+    letter-spacing: -0.018em;
+    color: var(--pm-foreground);
+  }
+
+  /* Tabular numerals for money/dates in a broker/finance context. */
+  .num {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1;
+  }
+
+  /* Consistent, token-driven focus ring across the app. */
+  :focus-visible {
+    outline: 2px solid var(--pm-ring);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--pm-brand-subtle);
+    color: var(--pm-foreground);
+  }
+}
+
+/* ─── Small component conveniences (still token-driven) ──────────────────── */
+@layer components {
+  .pm-card {
+    background-color: var(--pm-surface);
+    border: 1px solid var(--pm-border);
+    border-radius: var(--pm-radius-lg);
+    box-shadow: var(--pm-shadow-sm);
+  }
+
+  .pm-hairline {
+    border-color: var(--pm-border);
+  }
+}

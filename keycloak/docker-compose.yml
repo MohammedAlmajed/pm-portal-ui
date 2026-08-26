@@ -1,0 +1,18 @@
+# Local Keycloak for pm-portal-ui development.
+#   docker compose -f keycloak/docker-compose.yml up
+# Imports the `room` realm (client room-portal-spa, roles broker/customer, a dev
+# broker user broker@example.com / broker). Admin console: http://localhost:8080
+# (admin / admin). Dev only — do NOT use these settings anywhere real.
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    command: ['start-dev', '--import-realm']
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_HEALTH_ENABLED: 'true'
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./room-realm.json:/opt/keycloak/data/import/room-realm.json:ro
+      - ./themes:/opt/keycloak/themes:ro

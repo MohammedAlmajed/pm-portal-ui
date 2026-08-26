@@ -1,0 +1,69 @@
+{
+  "realm": "room",
+  "enabled": true,
+  "sslRequired": "external",
+  "loginTheme": "room",
+  "internationalizationEnabled": true,
+  "supportedLocales": ["ar", "en"],
+  "defaultLocale": "ar",
+  "registrationAllowed": false,
+  "registrationEmailAsUsername": true,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "verifyEmail": false,
+  "editUsernameAllowed": false,
+  "accessTokenLifespan": 300,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 36000,
+  "roles": {
+    "realm": [
+      { "name": "broker", "description": "External real-estate broker (external actor)." },
+      { "name": "customer", "description": "External customer/buyer (external actor)." }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "room-portal-spa",
+      "name": "Portal (pm-portal-ui)",
+      "description": "Public SPA/BFF client for the external-actor portals. Auth Code + PKCE.",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": ["http://localhost:3000/*", "http://localhost:3001/*"],
+      "webOrigins": ["http://localhost:3000", "http://localhost:3001"],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:3000/*##http://localhost:3001/*"
+      },
+      "protocolMappers": [
+        {
+          "name": "aud-room-api",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.custom.audience": "room-api",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "broker@example.com",
+      "email": "broker@example.com",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "وسيط",
+      "lastName": "تجريبي",
+      "credentials": [{ "type": "password", "value": "broker", "temporary": false }],
+      "realmRoles": ["broker"]
+    }
+  ]
+}

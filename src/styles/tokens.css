@@ -1,0 +1,189 @@
+/* ============================================================================
+ * pm-portal-ui — DESIGN TOKENS
+ * ----------------------------------------------------------------------------
+ * Three layers, in override order:
+ *   1. PRIMITIVES   — the raw palette/scale. Rarely referenced by components.
+ *   2. SEMANTIC     — what components actually use (--pm-surface, --pm-brand…).
+ *                     These are the ONLY things components/utilities read.
+ *   3. THEME/TENANT — overrides of the semantic layer per theme or per tenant.
+ *
+ * TO RESKIN A TENANT: override the small "brand" + "canvas" semantic tokens in
+ * a [data-tenant="..."] block (or inject inline via ThemeProvider). Everything
+ * else cascades. See docs/THEMING.md.
+ *
+ * Every token is intentionally named so it can be overridden in isolation.
+ * ========================================================================== */
+
+:root {
+  /* ─── 1. PRIMITIVES ─────────────────────────────────────────────────────
+   * Fresh, modern palette. Neutral cool-slate + an iris/indigo brand ramp.
+   * These are NEVER used directly by components — only by the semantic layer.
+   */
+
+  /* Brand ramp (default: iris/indigo). Override the ramp OR the semantic
+   * --pm-brand* tokens to reskin. */
+  --pm-c-brand-50: #eef1ff;
+  --pm-c-brand-100: #e0e5ff;
+  --pm-c-brand-200: #c6cdff;
+  --pm-c-brand-300: #a3adff;
+  --pm-c-brand-400: #7f86fb;
+  --pm-c-brand-500: #6366f1;
+  --pm-c-brand-600: #4f46e5;
+  --pm-c-brand-700: #4338ca;
+  --pm-c-brand-800: #372f9e;
+  --pm-c-brand-900: #2e2a7c;
+
+  /* Neutral ramp (cool slate). */
+  --pm-c-neutral-0: #ffffff;
+  --pm-c-neutral-50: #f8fafc;
+  --pm-c-neutral-100: #f1f5f9;
+  --pm-c-neutral-200: #e6eaf0;
+  --pm-c-neutral-300: #cdd5e0;
+  --pm-c-neutral-400: #97a3b6;
+  --pm-c-neutral-500: #64748b;
+  --pm-c-neutral-600: #475569;
+  --pm-c-neutral-700: #334155;
+  --pm-c-neutral-800: #1e293b;
+  --pm-c-neutral-900: #0f172a;
+  --pm-c-neutral-950: #070b16;
+
+  /* State ramps (subtle / base / strong). */
+  --pm-c-success-subtle: #e7f7ee;
+  --pm-c-success: #16a34a;
+  --pm-c-success-strong: #15803d;
+
+  --pm-c-warning-subtle: #fdf3e2;
+  --pm-c-warning: #d97706;
+  --pm-c-warning-strong: #b45309;
+
+  --pm-c-danger-subtle: #fdeaea;
+  --pm-c-danger: #dc2626;
+  --pm-c-danger-strong: #b91c1c;
+
+  --pm-c-info-subtle: #e7f0fe;
+  --pm-c-info: #2563eb;
+  --pm-c-info-strong: #1d4ed8;
+
+  /* Radii, spacing rhythm, typography, motion — primitive scales. */
+  --pm-radius-xs: 4px;
+  --pm-radius-sm: 6px;
+  --pm-radius-md: 10px;
+  --pm-radius-lg: 14px;
+  --pm-radius-xl: 20px;
+  --pm-radius-2xl: 28px;
+  --pm-radius-full: 9999px;
+
+  --pm-font-sans: 'IBM Plex Sans Arabic', ui-sans-serif, system-ui, 'Segoe UI',
+    'Helvetica Neue', Arial, sans-serif;
+  --pm-font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, monospace;
+
+  --pm-ease: cubic-bezier(0.22, 0.7, 0.18, 1);
+  --pm-duration: 200ms;
+
+  /* ─── 2. SEMANTIC TOKENS (light theme defaults) ─────────────────────────
+   * THIS is the layer components + Tailwind utilities read (via @theme inline
+   * in index.css). Named for easy, isolated override.
+   */
+
+  /* Backgrounds / surfaces */
+  --pm-canvas: var(--pm-c-neutral-50); /* page background */
+  --pm-surface: var(--pm-c-neutral-0); /* cards, panels */
+  --pm-surface-raised: var(--pm-c-neutral-0); /* popovers, menus (+ shadow) */
+  --pm-surface-sunken: var(--pm-c-neutral-100); /* wells, table headers */
+  --pm-overlay: rgba(7, 11, 22, 0.44); /* modal scrim */
+
+  /* Foreground / text */
+  --pm-foreground: var(--pm-c-neutral-900); /* primary text */
+  --pm-muted: var(--pm-c-neutral-500); /* secondary text */
+  --pm-subtle: var(--pm-c-neutral-400); /* tertiary / placeholder */
+  --pm-inverse: var(--pm-c-neutral-0); /* text on dark fills */
+
+  /* Lines */
+  --pm-border: var(--pm-c-neutral-200);
+  --pm-border-strong: var(--pm-c-neutral-300);
+  --pm-ring: var(--pm-c-brand-500); /* focus ring */
+
+  /* Brand */
+  --pm-brand: var(--pm-c-brand-600);
+  --pm-brand-hover: var(--pm-c-brand-700);
+  --pm-brand-active: var(--pm-c-brand-800);
+  --pm-brand-subtle: var(--pm-c-brand-50); /* tinted brand background */
+  --pm-brand-border: var(--pm-c-brand-200);
+  --pm-on-brand: #ffffff; /* text/icon on brand fill */
+
+  /* State (semantic) */
+  --pm-success: var(--pm-c-success);
+  --pm-success-subtle: var(--pm-c-success-subtle);
+  --pm-on-success: #ffffff;
+
+  --pm-warning: var(--pm-c-warning);
+  --pm-warning-subtle: var(--pm-c-warning-subtle);
+  --pm-on-warning: #ffffff;
+
+  --pm-danger: var(--pm-c-danger);
+  --pm-danger-subtle: var(--pm-c-danger-subtle);
+  --pm-on-danger: #ffffff;
+
+  --pm-info: var(--pm-c-info);
+  --pm-info-subtle: var(--pm-c-info-subtle);
+  --pm-on-info: #ffffff;
+
+  /* Elevation (shadows tuned for the light canvas) */
+  --pm-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --pm-shadow-md: 0 2px 4px rgba(15, 23, 42, 0.05), 0 8px 24px -12px rgba(15, 23, 42, 0.18);
+  --pm-shadow-lg: 0 4px 8px rgba(15, 23, 42, 0.06), 0 24px 48px -20px rgba(15, 23, 42, 0.24);
+}
+
+/* ─── 3a. DARK THEME ───────────────────────────────────────────────────────
+ * Overrides ONLY the semantic layer. Toggled by data-theme="dark" on <html>.
+ */
+[data-theme='dark'] {
+  --pm-canvas: var(--pm-c-neutral-950);
+  --pm-surface: #0d1526;
+  --pm-surface-raised: #131d33;
+  --pm-surface-sunken: #0a1120;
+  --pm-overlay: rgba(2, 4, 10, 0.6);
+
+  --pm-foreground: var(--pm-c-neutral-100);
+  --pm-muted: var(--pm-c-neutral-400);
+  --pm-subtle: var(--pm-c-neutral-500);
+  --pm-inverse: var(--pm-c-neutral-900);
+
+  --pm-border: #1f2a40;
+  --pm-border-strong: #2b3852;
+  --pm-ring: var(--pm-c-brand-400);
+
+  --pm-brand: var(--pm-c-brand-500);
+  --pm-brand-hover: var(--pm-c-brand-400);
+  --pm-brand-active: var(--pm-c-brand-300);
+  --pm-brand-subtle: rgba(99, 102, 241, 0.14);
+  --pm-brand-border: rgba(99, 102, 241, 0.32);
+  --pm-on-brand: #ffffff;
+
+  --pm-success-subtle: rgba(22, 163, 74, 0.16);
+  --pm-warning-subtle: rgba(217, 119, 6, 0.16);
+  --pm-danger-subtle: rgba(220, 38, 38, 0.16);
+  --pm-info-subtle: rgba(37, 99, 235, 0.16);
+
+  --pm-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --pm-shadow-md: 0 2px 4px rgba(0, 0, 0, 0.4), 0 8px 24px -12px rgba(0, 0, 0, 0.6);
+  --pm-shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.45), 0 24px 48px -20px rgba(0, 0, 0, 0.7);
+}
+
+/* ─── 3b. PER-TENANT OVERRIDE (example) ────────────────────────────────────
+ * A tenant reskins by overriding a FEW named tokens. Do it via a
+ * [data-tenant="..."] block here, or inject inline through ThemeProvider.
+ * Example — a tenant whose brand is emerald:
+ *
+ *   [data-tenant='acme'] {
+ *     --pm-brand: #059669;
+ *     --pm-brand-hover: #047857;
+ *     --pm-brand-active: #065f46;
+ *     --pm-brand-subtle: #e7f7ef;
+ *     --pm-brand-border: #a7f3d0;
+ *     --pm-ring: #10b981;
+ *   }
+ *
+ * Nothing else needs to change — buttons, links, focus rings, badges all
+ * follow --pm-brand automatically.
+ */
