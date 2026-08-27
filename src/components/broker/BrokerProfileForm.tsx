@@ -142,6 +142,23 @@ export function BrokerProfileForm({
         return;
       }
 
+      // A newly-uploaded FAL file must be CONFIRMED with pm-media (finalizes the upload so the
+      // document can actually be served — otherwise it stays pending and its URL comes back empty).
+      // Runs after the profile POST because the confirm handler links the media to an existing profile.
+      if (falFile && falLicenseMediaId != null) {
+        const confirmed = await fetch('/api/identity/broker/profile/fal-license/confirm', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ mediaId: falLicenseMediaId }),
+        })
+          .then((r) => r.ok)
+          .catch(() => false);
+        if (!confirmed) {
+          toast.error('تعذّر تأكيد وثيقة رخصة فال. حاول مرة أخرى.');
+          return;
+        }
+      }
+
       // Optional additional documents — uploaded after the profile exists, with per-file feedback.
       if (extraFiles.length) {
         let ok = 0;
