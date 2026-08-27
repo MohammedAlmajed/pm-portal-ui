@@ -15,6 +15,10 @@ import { cn } from '@/lib/cn';
 export function MobileNav({ items, brandLabel }: { items: NavItem[]; brandLabel: string }) {
   const pathname = usePathname();
   const [open, setOpen] = React.useState(false);
+  // Only the MOST SPECIFIC matching item is active (so "/broker" isn't lit on its children).
+  const activeHref = items
+    .filter((it) => pathname === it.href || pathname.startsWith(`${it.href}/`))
+    .sort((a, b) => b.href.length - a.href.length)[0]?.href;
 
   React.useEffect(() => {
     setOpen(false);
@@ -58,7 +62,7 @@ export function MobileNav({ items, brandLabel }: { items: NavItem[]; brandLabel:
           </div>
           <nav className="flex flex-1 flex-col gap-1 p-3">
             {items.map((item) => {
-              const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+              const active = item.href === activeHref;
               const Icon = ICONS[item.icon] ?? LayoutDashboard;
               return (
                 <Link

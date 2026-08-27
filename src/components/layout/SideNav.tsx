@@ -33,6 +33,11 @@ export interface NavItem {
 
 export function SideNav({ items, brandLabel }: { items: NavItem[]; brandLabel: string }) {
   const pathname = usePathname();
+  // Only the MOST SPECIFIC matching item is active, so the section root ("/broker")
+  // doesn't stay highlighted on its children ("/broker/leads", …).
+  const activeHref = items
+    .filter((it) => pathname === it.href || pathname.startsWith(`${it.href}/`))
+    .sort((a, b) => b.href.length - a.href.length)[0]?.href;
 
   return (
     <aside className="hidden w-64 shrink-0 flex-col border-e border-border bg-surface md:flex">
@@ -45,7 +50,7 @@ export function SideNav({ items, brandLabel }: { items: NavItem[]; brandLabel: s
 
       <nav className="flex flex-1 flex-col gap-1 p-3">
         {items.map((item) => {
-          const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+          const active = item.href === activeHref;
           const Icon = ICONS[item.icon] ?? LayoutDashboard;
           return (
             <Link
