@@ -36,12 +36,15 @@ export default async function LoginPage({
           {errorMsg ? (
             <p className="rounded-md bg-danger-subtle px-3 py-2 text-sm text-danger">{errorMsg}</p>
           ) : null}
-          <Link
+          {/* Hard navigation (NOT next/link): the OIDC flow redirects cross-origin to Keycloak and
+              the callback must Set-Cookie on a top-level navigation. A <Link> would do an RSC fetch
+              (CORS-blocked, cookie never lands) — that caused the login loop. */}
+          <a
             href={loginHref}
             className="inline-flex h-11 items-center justify-center rounded-md bg-brand text-sm font-medium text-on-brand transition-colors hover:bg-brand-hover"
           >
             تسجيل الدخول
-          </Link>
+          </a>
           <p className="text-center text-xs text-muted">
             لست وسيطًا مسجّلًا؟{' '}
             <Link href="/register" className="text-brand">

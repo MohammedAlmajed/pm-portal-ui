@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { LogOut } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
 import { MobileNav } from '@/components/layout/MobileNav';
@@ -25,13 +24,16 @@ export function TopBar({
       <div className="flex items-center gap-2">
         {userName ? <span className="hidden text-sm text-muted sm:inline">{userName}</span> : null}
         <ThemeToggle />
-        <Link
+        {/* Hard navigation (NOT next/link): logout redirects cross-origin to Keycloak; a <Link>
+            would RSC-fetch it (CORS-blocked) and even PREFETCH it (logging you out on hover). */}
+        {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- intentional hard nav to an OIDC route handler, not a page */}
+        <a
           href="/api/auth/logout"
           aria-label="تسجيل الخروج"
           className="inline-flex h-9 w-9 items-center justify-center rounded-md text-muted transition-colors hover:bg-surface-sunken hover:text-foreground"
         >
           <LogOut size={18} />
-        </Link>
+        </a>
       </div>
     </header>
   );

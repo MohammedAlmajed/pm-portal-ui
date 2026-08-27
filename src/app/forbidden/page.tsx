@@ -1,5 +1,3 @@
-import Link from 'next/link';
-
 export default function ForbiddenPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-canvas p-6 text-center">
@@ -7,9 +5,10 @@ export default function ForbiddenPage() {
       <p className="max-w-sm text-sm text-muted">
         لا تملك الصلاحية للوصول إلى هذه الصفحة بهذا الحساب.
       </p>
-      <Link href="/api/auth/logout" className="text-sm font-medium text-brand">
+      {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- intentional hard nav to an OIDC route handler, not a page */}
+      <a href="/api/auth/logout" className="text-sm font-medium text-brand">
         تسجيل الخروج والدخول بحساب آخر
-      </Link>
+      </a>
     </div>
   );
 }

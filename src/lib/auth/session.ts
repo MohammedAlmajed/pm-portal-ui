@@ -1,66 +1,40 @@
 import 'server-only';
 import { cookies } from 'next/headers';
-import { EncryptJWT, jwtDecrypt } from 'jose';
-import { env } from '@/lib/env';
 import type { PortalSession } from './session-types';
+import {
+  sealSession,
+  unsealSession,
+  sessionCookieOptions,
+  SESSION_MAX_AGE_SECONDS,
+  COOKIE,
+} from './session-crypto';
 
 /**
- * Session sealing. The session (including the access token) is ENCRYPTED with a
- * key derived from PORTAL_SESSION_SECRET and stored in an HttpOnly cookie.
- * Encryption (not just signing) so a leaked cookie can't be read, and it can't
- * be tampered with. The browser only ever holds an opaque, HttpOnly blob.
+ * Server-side session access (Server Components / Route Handlers). The crypto and
+ * refresh live in the edge-safe ./session-crypto so the middleware can share them;
+ * this module adds the next/headers cookie jar on top.
  */
 
-async function deriveKey(): Promise<Uint8Array> {
-  // A256GCM 'dir' needs a 32-byte key; derive it deterministically from the secret.
-  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(env.session.secret));
-  return new Uint8Array(digest);
-}
+// Re-exported for existing importers (callback route, etc.).
+export { sealSession, unsealSession, SESSION_MAX_AGE_SECONDS };
 
-export async function sealSession(session: PortalSession): Promise<string> {
-  const key = await deriveKey();
-  return new EncryptJWT({ ...session })
-    .setProtectedHeader({ alg: 'dir', enc: 'A256GCM' })
-    .setIssuedAt()
-    .setExpirationTime(session.expiresAt)
-    .encrypt(key);
-}
-
-export async function unsealSession(token: string): Promise<PortalSession | null> {
-  try {
-    const key = await deriveKey();
-    const { payload } = await jwtDecrypt(token, key);
-    return payload as unknown as PortalSession;
-  } catch {
-    // Tampered, expired, or wrong key → treat as no session.
-    return null;
-  }
-}
-
-const COOKIE = env.session.cookieName;
-
-/** Read + unseal the current session in a Server Component / Route Handler. */
+/** Read + unseal the current session. */
 export async function getSession(): Promise<PortalSession | null> {
   const store = await cookies();
   const raw = store.get(COOKIE)?.value;
   if (!raw) return null;
   const session = await unsealSession(raw);
   if (!session) return null;
-  // Expiry guard (jose also enforces exp, but be explicit).
-  if (session.expiresAt * 1000 < Date.now()) return null;
+  // Session-level expiry (6h). The access token inside may be momentarily stale — the
+  // middleware refreshes it before the page renders, so we don't invalidate on expiresAt here.
+  if (session.sessionExpiresAt * 1000 < Date.now()) return null;
   return session;
 }
 
 export async function setSessionCookie(session: PortalSession): Promise<void> {
   const store = await cookies();
   const sealed = await sealSession(session);
-  store.set(COOKIE, sealed, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    path: '/',
-    expires: new Date(session.expiresAt * 1000),
-  });
+  store.set(COOKIE, sealed, sessionCookieOptions(session.sessionExpiresAt));
 }
 
 export async function clearSessionCookie(): Promise<void> {

@@ -1,34 +1,78 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import {
+  COOKIE,
+  REFRESH_SKEW_SECONDS,
+  unsealSession,
+  sealSession,
+  refreshSession,
+  sessionCookieOptions,
+} from '@/lib/auth/session-crypto';
 
 /**
- * Auth gate (edge). Deliberately LIGHT: it only checks for the presence of the
- * sealed session cookie and redirects unauthenticated users to /login. Full
- * cryptographic verification + expiry happens server-side in getSession()/
- * requireSession() — not in the edge middleware.
+ * Auth gate + silent token refresh (edge).
  *
- * NOTE: this app does NOT do hostname→folder tenant rewriting (that was
- * properties-manager-ui baggage for serving many marketing sites). Tenancy is
- * resolved by the backend from the x-tenant-host header on BFF calls.
+ * The session cookie lives 6h; the access token inside expires ~every 5 min. This
+ * middleware is the one place that runs BEFORE a Server Component renders AND can
+ * write cookies, so it owns the refresh: when the access token is (near) expired it
+ * swaps the refresh token for a fresh one, re-seals the cookie, and forwards the new
+ * cookie both to the browser and to the downstream page/BFF in the SAME request.
+ *
+ * Only imports the edge-safe ./session-crypto (no server-only / next/headers).
+ *
+ * NOTE: no hostname→folder tenant rewriting here (that was properties-manager-ui
+ * baggage). Tenancy is resolved by the backend from the x-tenant-host BFF header.
  */
-const SESSION_COOKIE = process.env.PORTAL_SESSION_COOKIE || 'pm_portal_session';
-
-// Portal areas that require a session. Everything else (login, callback, assets) is open.
 const PROTECTED_PREFIXES = ['/broker', '/customer'];
 
-export function middleware(req: NextRequest) {
+function loginRedirect(req: NextRequest): NextResponse {
+  const url = new URL('/login', req.url);
+  url.searchParams.set('returnTo', req.nextUrl.pathname + req.nextUrl.search);
+  const res = NextResponse.redirect(url);
+  res.cookies.delete(COOKIE);
+  return res;
+}
+
+/** Rewrite the Cookie header so the downstream (this same request) reads the fresh session. */
+function withCookie(header: string | null, name: string, value: string): string {
+  const parts = (header ? header.split(/;\s*/) : []).filter((p) => p && !p.startsWith(`${name}=`));
+  parts.push(`${name}=${value}`);
+  return parts.join('; ');
+}
+
+export async function middleware(req: NextRequest): Promise<NextResponse> {
   const { pathname } = req.nextUrl;
+  const isAuthApi = pathname.startsWith('/api/auth'); // login/callback/logout manage their own cookies
+  const isBff = pathname.startsWith('/api/') && !isAuthApi;
+  const isProtectedPage = PROTECTED_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 
-  const isProtected = PROTECTED_PREFIXES.some(
-    (p) => pathname === p || pathname.startsWith(`${p}/`),
-  );
-  if (!isProtected) return NextResponse.next();
+  // Static assets, /login, /register, /api/auth/* → nothing to do.
+  if (isAuthApi || (!isBff && !isProtectedPage)) return NextResponse.next();
 
-  const hasSession = req.cookies.has(SESSION_COOKIE);
-  if (hasSession) return NextResponse.next();
+  const raw = req.cookies.get(COOKIE)?.value;
+  const session = raw ? await unsealSession(raw) : null;
+  const now = Math.floor(Date.now() / 1000);
 
-  const loginUrl = new URL('/login', req.url);
-  loginUrl.searchParams.set('returnTo', pathname + req.nextUrl.search);
-  return NextResponse.redirect(loginUrl);
+  // No session or the 6h window elapsed: pages → /login; BFF → let the route emit its own 401.
+  if (!session || session.sessionExpiresAt <= now) {
+    return isProtectedPage ? loginRedirect(req) : NextResponse.next();
+  }
+
+  // Access token still fresh → pass through unchanged.
+  if (session.expiresAt - REFRESH_SKEW_SECONDS > now) return NextResponse.next();
+
+  // Access token (near) expired → refresh, preserving the 6h session window.
+  const refreshed = await refreshSession(session);
+  if (!refreshed) {
+    // Refresh token expired/revoked (e.g. logged out elsewhere) → real logout.
+    return isProtectedPage ? loginRedirect(req) : NextResponse.next();
+  }
+
+  const sealed = await sealSession(refreshed);
+  const reqHeaders = new Headers(req.headers);
+  reqHeaders.set('cookie', withCookie(req.headers.get('cookie'), COOKIE, sealed));
+  const res = NextResponse.next({ request: { headers: reqHeaders } });
+  res.cookies.set(COOKIE, sealed, sessionCookieOptions(refreshed.sessionExpiresAt));
+  return res;
 }
 
 export const config = {

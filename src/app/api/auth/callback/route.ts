@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import { decodeJwt } from 'jose';
 import { exchangeCode } from '@/lib/auth/keycloak';
 import { verifyIdToken, extractOrg, extractRoles } from '@/lib/auth/verify';
-import { setSessionCookie } from '@/lib/auth/session';
+import { setSessionCookie, SESSION_MAX_AGE_SECONDS } from '@/lib/auth/session';
 import { env } from '@/lib/env';
 import type { PortalSession } from '@/lib/auth/session-types';
 
@@ -58,6 +58,7 @@ export async function GET(req: NextRequest) {
       accessToken: tokens.access_token,
       refreshToken: tokens.refresh_token,
       expiresAt: Math.floor(Date.now() / 1000) + tokens.expires_in,
+      sessionExpiresAt: Math.floor(Date.now() / 1000) + SESSION_MAX_AGE_SECONDS,
     };
 
     await setSessionCookie(session);

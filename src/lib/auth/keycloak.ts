@@ -57,6 +57,9 @@ export async function exchangeCode(code: string, codeVerifier: string): Promise<
   return (await res.json()) as TokenResponse;
 }
 
+// NOTE: the refresh-token grant lives in ./session-crypto (refreshSession) so the edge
+// middleware can call it too — keycloak.ts is server-only and can't be imported there.
+
 export function buildEndSessionUrl(idTokenHint?: string): string {
   const ep = keycloakEndpoints(env.keycloak.issuer);
   const url = new URL(ep.endSession);

@@ -21,8 +21,10 @@ export interface PortalSession {
   /** OAuth access token — sealed in the cookie, forwarded server-side as Bearer. Never sent to the browser. */
   accessToken: string;
   refreshToken?: string;
-  /** Epoch seconds when the access token expires. */
+  /** Epoch seconds when the ACCESS token expires (~5 min) — triggers a refresh. */
   expiresAt: number;
+  /** Epoch seconds when the whole SESSION expires (login + 6h) — the hard logout limit. */
+  sessionExpiresAt: number;
 }
 
 export const ROLE = {
