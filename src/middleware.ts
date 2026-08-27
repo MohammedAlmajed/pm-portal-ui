@@ -7,6 +7,7 @@ import {
   refreshSession,
   sessionCookieOptions,
 } from '@/lib/auth/session-crypto';
+import { PUBLIC_PATHS } from '@/lib/routes';
 
 /**
  * Auth gate + silent token refresh (edge).
@@ -19,10 +20,12 @@ import {
  *
  * Only imports the edge-safe ./session-crypto (no server-only / next/headers).
  *
+ * The broker experience is the whole app (root), so we protect EVERYTHING except the
+ * public pages (/login, /register, /forbidden) and the auth API. No "/broker" prefix.
+ *
  * NOTE: no hostname→folder tenant rewriting here (that was properties-manager-ui
  * baggage). Tenancy is resolved by the backend from the x-tenant-host BFF header.
  */
-const PROTECTED_PREFIXES = ['/broker', '/customer'];
 
 function loginRedirect(req: NextRequest): NextResponse {
   const url = new URL('/login', req.url);
@@ -43,10 +46,12 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
   const { pathname } = req.nextUrl;
   const isAuthApi = pathname.startsWith('/api/auth'); // login/callback/logout manage their own cookies
   const isBff = pathname.startsWith('/api/') && !isAuthApi;
-  const isProtectedPage = PROTECTED_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+  const isPublicPage = PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+  // Everything that isn't the auth API, a public page, or a BFF call is a protected page.
+  const isProtectedPage = !isBff && !isAuthApi && !isPublicPage;
 
-  // Static assets, /login, /register, /api/auth/* → nothing to do.
-  if (isAuthApi || (!isBff && !isProtectedPage)) return NextResponse.next();
+  // Auth endpoints manage their own cookies; public pages need no session.
+  if (isAuthApi || isPublicPage) return NextResponse.next();
 
   const raw = req.cookies.get(COOKIE)?.value;
   const session = raw ? await unsealSession(raw) : null;

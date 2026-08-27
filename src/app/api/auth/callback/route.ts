@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
   const store = await cookies();
   const expectedState = store.get('pm_oauth_state')?.value;
   const verifier = store.get('pm_oauth_verifier')?.value;
-  const returnTo = store.get('pm_oauth_return')?.value ?? '/broker';
+  const returnTo = store.get('pm_oauth_return')?.value ?? '/';
 
   // Clear the short-lived flow cookies regardless of outcome.
   for (const c of ['pm_oauth_state', 'pm_oauth_nonce', 'pm_oauth_verifier', 'pm_oauth_return']) {
@@ -63,7 +63,7 @@ export async function GET(req: NextRequest) {
 
     await setSessionCookie(session);
     // Only allow same-origin relative returnTo to avoid open redirects.
-    const safeReturn = returnTo.startsWith('/') ? returnTo : '/broker';
+    const safeReturn = returnTo.startsWith('/') ? returnTo : '/';
     return NextResponse.redirect(new URL(safeReturn, env.appOrigin));
   } catch (e) {
     console.error('[auth/callback] token exchange / id_token verify failed:', e);

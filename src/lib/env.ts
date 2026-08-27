@@ -55,6 +55,17 @@ export const env = {
   },
   appOrigin: optional('NEXT_PUBLIC_APP_ORIGIN', 'http://localhost:3000'),
 
+  portal: {
+    /**
+     * Dedicated single-developer deployment (the portal IS one developer). Collapses the
+     * marketplace: no directory to browse, the home becomes a membership hub, and joining is
+     * the front door. Unset/false = the shared multi-developer portal (directory + dashboard).
+     */
+    get singleDeveloper() {
+      return optional('PORTAL_SINGLE_DEVELOPER').toLowerCase() === 'true';
+    },
+  },
+
   /**
    * White-label branding. All read SERVER-SIDE (plain env, not NEXT_PUBLIC), so the SAME
    * image reskins per deployment via ConfigMap — no rebuild. Text is threaded to client

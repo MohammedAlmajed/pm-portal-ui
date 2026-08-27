@@ -11,7 +11,7 @@ import { randomUrlToken, codeChallengeFromVerifier } from '@/lib/auth/pkce';
  * Query: ?returnTo=/broker  &org=<alias>
  */
 export async function GET(req: NextRequest) {
-  const returnTo = req.nextUrl.searchParams.get('returnTo') ?? '/broker';
+  const returnTo = req.nextUrl.searchParams.get('returnTo') ?? '/';
   const orgAlias = req.nextUrl.searchParams.get('org') ?? undefined;
 
   const state = randomUrlToken();

@@ -32,7 +32,7 @@ export function ApplyButton({
 
   if (!profileComplete) {
     return (
-      <Link href="/broker/profile" className="text-xs font-medium text-warning">
+      <Link href="/profile" className="text-xs font-medium text-warning">
         أكمل ملفك المهني أولًا (رخصة فال ووثيقتها)
       </Link>
     );

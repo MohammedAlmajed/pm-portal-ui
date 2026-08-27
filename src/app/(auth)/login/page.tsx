@@ -15,7 +15,7 @@ export default async function LoginPage({
 }: {
   searchParams: Promise<{ returnTo?: string; error?: string; registered?: string }>;
 }) {
-  const { returnTo = '/broker', error, registered } = await searchParams;
+  const { returnTo = '/', error, registered } = await searchParams;
   const loginHref = `/api/auth/login?returnTo=${encodeURIComponent(returnTo)}`;
   const errorMsg = error ? (ERRORS[error] ?? 'حدث خطأ أثناء تسجيل الدخول.') : null;
 

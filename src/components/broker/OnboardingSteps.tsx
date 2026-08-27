@@ -56,11 +56,11 @@ const HEADLINE: Record<BrokerStage, { title: string; desc: string }> = {
 };
 
 const CTA: Record<BrokerStage, { href: string; label: string } | null> = {
-  'profile-incomplete': { href: '/broker/profile', label: 'أكمل ملفي' },
-  'no-applications': { href: '/broker/developers', label: 'تصفّح المطوّرين' },
-  pending: { href: '/broker/applications', label: 'متابعة طلباتي' },
-  'rejected-only': { href: '/broker/developers', label: 'التقديم إلى مطوّر آخر' },
-  approved: { href: '/broker/leads', label: 'عرض العملاء المحتملين' },
+  'profile-incomplete': { href: '/profile', label: 'أكمل ملفي' },
+  'no-applications': { href: '/developers', label: 'تصفّح المطوّرين' },
+  pending: { href: '/applications', label: 'متابعة طلباتي' },
+  'rejected-only': { href: '/developers', label: 'التقديم إلى مطوّر آخر' },
+  approved: { href: '/leads', label: 'عرض العملاء المحتملين' },
 };
 
 function StepDot({ state, Icon }: { state: StepState; Icon: typeof UserCircle }) {
