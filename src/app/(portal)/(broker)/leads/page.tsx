@@ -1,8 +1,8 @@
 import { Card } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
 import { serverJson } from '@/server/api-client';
 import { ReferralLinks } from '@/components/broker/ReferralLinks';
 import { OnboardingSteps } from '@/components/broker/OnboardingSteps';
+import { LeadsList, type Lead } from '@/components/broker/LeadsList';
 import { getBrokerStatus } from '@/server/broker-status';
 import { buildShareHub } from '@/server/share-hub';
 
@@ -13,36 +13,6 @@ export const metadata = { title: 'المهتمّين' };
  * Served by pm-Identity's [BrokerOnly] GET /broker/leads, aggregated cross-tenant. This page (leads
  * + referral share hub) is GATED: it unlocks only once a developer has approved the broker.
  */
-type LeadStatus = 'New' | 'Contacted' | 'NoResponse' | 'Interested' | 'NotInterested';
-
-interface Lead {
-  id: number;
-  customerName: string;
-  projectName?: string;
-  developerName?: string;
-  status: LeadStatus;
-  createdAt: string;
-}
-
-const STATUS_LABEL: Record<LeadStatus, string> = {
-  New: 'جديد',
-  Contacted: 'تم التواصل',
-  NoResponse: 'لا يوجد رد',
-  Interested: 'مهتم',
-  NotInterested: 'غير مهتم',
-};
-const STATUS_TONE = {
-  New: 'info',
-  Contacted: 'brand',
-  NoResponse: 'neutral',
-  Interested: 'success',
-  NotInterested: 'danger',
-} as const;
-
-function fmtDate(iso: string) {
-  return new Date(iso).toLocaleDateString('ar', { year: 'numeric', month: 'long', day: 'numeric' });
-}
-
 export default async function LeadsPage() {
   const status = await getBrokerStatus();
 
@@ -103,21 +73,7 @@ export default async function LeadsPage() {
           </p>
         </Card>
       ) : (
-        <Card className="divide-y divide-border">
-          {leads.map((l) => (
-            <div key={l.id} className="flex items-center justify-between gap-4 p-4">
-              <div className="min-w-0">
-                <p className="truncate text-sm font-medium text-foreground">{l.customerName}</p>
-                <p className="truncate text-xs text-muted">
-                  {[l.projectName, l.developerName].filter(Boolean).join(' · ')}
-                  {l.projectName || l.developerName ? ' · ' : ''}
-                  <span className="num">{fmtDate(l.createdAt)}</span>
-                </p>
-              </div>
-              <Badge tone={STATUS_TONE[l.status]}>{STATUS_LABEL[l.status]}</Badge>
-            </div>
-          ))}
-        </Card>
+        <LeadsList leads={leads} />
       )}
     </div>
   );
