@@ -9,21 +9,29 @@ import { TopBar } from './TopBar';
 export function AppShell({
   title,
   brandLabel,
+  brandMark,
   navItems,
   userName,
   children,
 }: {
   title: string;
   brandLabel: string;
+  brandMark: string;
   navItems: NavItem[];
   userName?: string;
   children: React.ReactNode;
 }) {
   return (
     <div className="flex min-h-screen bg-canvas">
-      <SideNav items={navItems} brandLabel={brandLabel} />
+      <SideNav items={navItems} brandLabel={brandLabel} brandMark={brandMark} />
       <div className="flex min-w-0 flex-1 flex-col">
-        <TopBar title={title} userName={userName} navItems={navItems} brandLabel={brandLabel} />
+        <TopBar
+          title={title}
+          userName={userName}
+          navItems={navItems}
+          brandLabel={brandLabel}
+          brandMark={brandMark}
+        />
         <main className="flex-1 p-5 md:p-8">
           <div className="mx-auto w-full max-w-6xl">{children}</div>
         </main>

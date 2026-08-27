@@ -8,16 +8,18 @@ export function TopBar({
   userName,
   navItems,
   brandLabel,
+  brandMark,
 }: {
   title: string;
   userName?: string;
   navItems: NavItem[];
   brandLabel: string;
+  brandMark: string;
 }) {
   return (
     <header className="flex h-16 items-center justify-between gap-2 border-b border-border bg-surface/80 px-4 backdrop-blur md:px-5">
       <div className="flex min-w-0 items-center gap-1">
-        <MobileNav items={navItems} brandLabel={brandLabel} />
+        <MobileNav items={navItems} brandLabel={brandLabel} brandMark={brandMark} />
         <h1 className="truncate text-lg font-semibold text-foreground">{title}</h1>
       </div>
 

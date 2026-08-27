@@ -2,6 +2,7 @@ import { AppShell } from '@/components/layout/AppShell';
 import type { NavItem } from '@/components/layout/SideNav';
 import { requireRole } from '@/lib/auth/require-session';
 import { ROLE } from '@/lib/auth/session-types';
+import { env } from '@/lib/env';
 
 // icon = a KEY resolved in the client SideNav (components can't cross the RSC boundary).
 const NAV: NavItem[] = [
@@ -21,7 +22,13 @@ export default async function BrokerLayout({ children }: { children: React.React
   const session = await requireRole(ROLE.BROKER, '/broker');
 
   return (
-    <AppShell title="بوابة الوسطاء" brandLabel="الوسطاء" navItems={NAV} userName={session.name}>
+    <AppShell
+      title={env.brand.name}
+      brandLabel={env.brand.short}
+      brandMark={env.brand.mark}
+      navItems={NAV}
+      userName={session.name}
+    >
       {children}
     </AppShell>
   );

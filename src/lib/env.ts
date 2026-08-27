@@ -54,6 +54,49 @@ export const env = {
     },
   },
   appOrigin: optional('NEXT_PUBLIC_APP_ORIGIN', 'http://localhost:3000'),
+
+  /**
+   * White-label branding. All read SERVER-SIDE (plain env, not NEXT_PUBLIC), so the SAME
+   * image reskins per deployment via ConfigMap — no rebuild. Text is threaded to client
+   * components as props; colors are injected as CSS-var overrides on <html> (see layout).
+   * Defaults keep the Wisla broker-portal look, so existing deploys are unchanged.
+   */
+  brand: {
+    get name() {
+      return optional('BRAND_NAME', 'بوابة الوسطاء');
+    },
+    get short() {
+      return optional('BRAND_SHORT', 'الوسطاء');
+    },
+    get mark() {
+      return optional('BRAND_MARK', 'و');
+    },
+    get description() {
+      return optional('BRAND_DESCRIPTION', 'بوابة الوسطاء العقاريين — التسجيل ومتابعة الطلبات');
+    },
+    get themeColor() {
+      return optional('BRAND_THEME_COLOR', '#264ac3');
+    },
+    /**
+     * Optional `--pm-brand*` overrides as a CSS declaration string. Only the vars that are
+     * set are emitted; empty string = keep the default indigo theme. Everything (buttons,
+     * links, focus rings, active nav) cascades from these.
+     */
+    get cssVars(): string {
+      const overrides: Record<string, string> = {
+        '--pm-brand': optional('BRAND_COLOR'),
+        '--pm-brand-hover': optional('BRAND_COLOR_HOVER'),
+        '--pm-brand-active': optional('BRAND_COLOR_ACTIVE'),
+        '--pm-brand-subtle': optional('BRAND_COLOR_SUBTLE'),
+        '--pm-brand-border': optional('BRAND_COLOR_BORDER'),
+        '--pm-ring': optional('BRAND_RING'),
+      };
+      return Object.entries(overrides)
+        .filter(([, v]) => v)
+        .map(([k, v]) => `${k}:${v}`)
+        .join(';');
+    },
+  },
 } as const;
 
 /** Keycloak OIDC endpoints derived from the issuer. */

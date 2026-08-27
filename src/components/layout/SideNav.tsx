@@ -31,7 +31,15 @@ export interface NavItem {
   icon: keyof typeof ICONS | string;
 }
 
-export function SideNav({ items, brandLabel }: { items: NavItem[]; brandLabel: string }) {
+export function SideNav({
+  items,
+  brandLabel,
+  brandMark,
+}: {
+  items: NavItem[];
+  brandLabel: string;
+  brandMark: string;
+}) {
   const pathname = usePathname();
   // Only the MOST SPECIFIC matching item is active, so the section root ("/broker")
   // doesn't stay highlighted on its children ("/broker/leads", …).
@@ -43,7 +51,7 @@ export function SideNav({ items, brandLabel }: { items: NavItem[]; brandLabel: s
     <aside className="hidden w-64 shrink-0 flex-col border-e border-border bg-surface md:flex">
       <div className="flex h-16 items-center gap-2 px-5">
         <div className="flex h-8 w-8 items-center justify-center rounded-md bg-brand text-on-brand">
-          <span className="text-sm font-bold">و</span>
+          <span className="text-sm font-bold">{brandMark}</span>
         </div>
         <span className="text-sm font-semibold text-foreground">{brandLabel}</span>
       </div>

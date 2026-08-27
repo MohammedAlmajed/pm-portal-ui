@@ -1,3 +1,6 @@
+// Per-request so the layout's white-label brand (env-driven) isn't baked at build time.
+export const dynamic = 'force-dynamic';
+
 export default function ForbiddenPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-canvas p-6 text-center">

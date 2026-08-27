@@ -79,3 +79,22 @@ Buttons, links, badges, focus rings, and active nav all follow `--pm-brand` auto
   named semantic token first.
 - Keep dark + light in sync when you add a semantic token.
 - Prefer `-subtle` background + solid `text-*` for status pills (see `Badge`).
+
+## White-label a dedicated deployment (env-driven, same image)
+
+For a dedicated per-client instance, don't rebuild — set env (ConfigMap). All read
+server-side, threaded to components; no `NEXT_PUBLIC` baking. Empty = keep the default.
+
+| Env | What |
+|---|---|
+| `BRAND_NAME` | full name (titles, login card) |
+| `BRAND_SHORT` | sidebar label |
+| `BRAND_MARK` | logo glyph in the brand chip |
+| `BRAND_DESCRIPTION` | `<meta name=description>` |
+| `BRAND_THEME_COLOR` | `<meta theme-color>` (browser chrome / PWA) |
+| `BRAND_COLOR` / `_HOVER` / `_ACTIVE` / `_SUBTLE` / `_BORDER` | `--pm-brand*` overrides |
+| `BRAND_RING` | focus ring `--pm-ring` |
+
+Colors are injected as `:root,:root[data-theme="dark"]{ … }` on the server-rendered
+`<html>` — buttons, links, focus rings, active nav all follow. Pages that show branding
+are `force-dynamic` so the values reflect the deploy's ConfigMap, not build time.

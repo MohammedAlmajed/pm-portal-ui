@@ -12,7 +12,15 @@ import { cn } from '@/lib/cn';
  * Mobile navigation drawer. The desktop SideNav is hidden under `md`, so this hamburger +
  * slide-over provides navigation on phones. Closes on route change and on link click.
  */
-export function MobileNav({ items, brandLabel }: { items: NavItem[]; brandLabel: string }) {
+export function MobileNav({
+  items,
+  brandLabel,
+  brandMark,
+}: {
+  items: NavItem[];
+  brandLabel: string;
+  brandMark: string;
+}) {
   const pathname = usePathname();
   const [open, setOpen] = React.useState(false);
   // Only the MOST SPECIFIC matching item is active (so "/broker" isn't lit on its children).
@@ -44,7 +52,7 @@ export function MobileNav({ items, brandLabel }: { items: NavItem[]; brandLabel:
           <div className="flex h-16 items-center justify-between px-4">
             <div className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-md bg-brand text-on-brand">
-                <span className="text-sm font-bold">و</span>
+                <span className="text-sm font-bold">{brandMark}</span>
               </div>
               <Dialog.Title className="text-sm font-semibold text-foreground">
                 {brandLabel}
