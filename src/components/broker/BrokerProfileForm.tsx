@@ -189,16 +189,25 @@ export function BrokerProfileForm({
 
       // Guided join: profile is now complete → submit the application to the single developer.
       if (joinDeveloperTenantId != null) {
-        const applied = await fetch('/api/identity/broker/applications', {
+        const res = await fetch('/api/identity/broker/applications', {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({ developerTenantId: joinDeveloperTenantId }),
-        })
-          .then((r) => r.ok)
-          .catch(() => false);
-        toast.success(
-          applied ? 'تم إرسال طلب انضمامك — سنُعلمك فور صدور القرار.' : 'تم حفظ ملفك.',
-        );
+        }).catch(() => null);
+        if (res?.ok) {
+          toast.success('تم إرسال طلب انضمامك — سنُعلمك فور صدور القرار.');
+        } else {
+          const detail = String(
+            ((await res?.json().catch(() => ({}))) as { detail?: string } | undefined)?.detail ?? '',
+          );
+          if (detail.includes('FalLicenseExpired')) {
+            toast.error('حُفظ ملفك، لكن رخصة فال منتهية — جدّدها ثم انضمّ.');
+          } else if (detail.includes('FalLicenseNotFound')) {
+            toast.error('حُفظ ملفك، لكن لم يتم العثور على رخصة فال في السجل.');
+          } else {
+            toast.info('تم حفظ ملفك. يمكنك الانضمام من الصفحة الرئيسية.');
+          }
+        }
         router.push('/');
         return;
       }

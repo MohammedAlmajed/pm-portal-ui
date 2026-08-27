@@ -68,6 +68,12 @@ export function ApplyButton({
       } else if (detail.includes('ProfileIncomplete') || detail.includes('ProfileRequired')) {
         setState('error');
         toast.error('أكمل ملفك المهني (رخصة فال ووثيقتها) قبل التقديم.');
+      } else if (detail.includes('FalLicenseExpired')) {
+        setState('error');
+        toast.error('رخصة فال منتهية — جدّدها قبل التقديم.');
+      } else if (detail.includes('FalLicenseNotFound')) {
+        setState('error');
+        toast.error('لم يتم العثور على رخصة فال في السجل — تحقّق من الرقم.');
       } else {
         setState('error');
         toast.error('تعذّر إرسال الطلب. حاول لاحقًا.');

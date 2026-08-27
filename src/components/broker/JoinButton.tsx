@@ -45,6 +45,10 @@ export function JoinButton({
         router.push('/join');
       } else if (detail.includes('AlreadyPending') || detail.includes('AlreadyApproved')) {
         router.refresh();
+      } else if (detail.includes('FalLicenseExpired')) {
+        toast.error('رخصة فال منتهية — جدّدها قبل الانضمام.');
+      } else if (detail.includes('FalLicenseNotFound')) {
+        toast.error('لم يتم العثور على رخصة فال في السجل — تحقّق من الرقم.');
       } else {
         toast.error('تعذّر إرسال طلب الانضمام. حاول لاحقًا.');
       }
