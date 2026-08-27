@@ -159,3 +159,29 @@
     border-color: var(--pm-border);
   }
 }
+
+/* ─── Motion: deliberate entrance for the membership hub (honors reduced-motion) ── */
+@keyframes pm-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@layer utilities {
+  .animate-fade-up {
+    animation: pm-fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .animate-fade-up-2 {
+    animation: pm-fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.09s both;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up,
+  .animate-fade-up-2 {
+    animation: none;
+  }
+}

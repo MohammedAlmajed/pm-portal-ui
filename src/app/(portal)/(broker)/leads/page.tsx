@@ -1,9 +1,10 @@
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { serverJson } from '@/server/api-client';
-import { ReferralLinks, type ReferralDeveloper } from '@/components/broker/ReferralLinks';
+import { ReferralLinks } from '@/components/broker/ReferralLinks';
 import { OnboardingSteps } from '@/components/broker/OnboardingSteps';
 import { getBrokerStatus } from '@/server/broker-status';
+import { buildShareHub } from '@/server/share-hub';
 
 export const metadata = { title: 'العملاء المحتملون' };
 
@@ -40,63 +41,6 @@ const STATUS_TONE = {
 
 function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString('ar', { year: 'numeric', month: 'long', day: 'numeric' });
-}
-
-interface DirectoryDeveloper {
-  id: number;
-  domain?: string;
-}
-// Shape of the developer's public /public/projects/options (only the bits we surface).
-interface PublicProjectOption {
-  id: number;
-  name?: string;
-  nameEn?: string;
-  status?: number | string;
-  isPublic?: boolean;
-}
-
-/**
- * Fetch a developer's PUBLIC projects. The monolith resolves tenant from x-tenant-id, so we
- * address the developer by their tenant id (from the broker directory). Public + anonymous —
- * we only ever call it for developers this broker has been approved with.
- */
-async function fetchDeveloperProjects(tenantId: number): Promise<{ id: number; name: string }[]> {
-  try {
-    const res = await serverJson<{ projects?: PublicProjectOption[] }>(
-      'monolith',
-      'public/projects/options',
-      { anonymous: true, headers: { 'x-tenant-id': String(tenantId) } },
-    );
-    return (res?.projects ?? [])
-      .filter((p) => p.isPublic !== false && p.status !== 2 && String(p.status) !== 'SoldOut')
-      .map((p) => ({ id: p.id, name: p.name || p.nameEn || `#${p.id}` }));
-  } catch {
-    return []; // developer unreachable / no public projects — fall back to the general link only
-  }
-}
-
-/** Build the referral share hub for the broker's APPROVED developers (directory + public projects). */
-async function buildShareHub(
-  code: string | undefined,
-  approved: { developerTenantId: number; developerName?: string }[],
-): Promise<ReferralDeveloper[]> {
-  if (!code || !approved.length) return [];
-  try {
-    const dir = (await serverJson<DirectoryDeveloper[]>('identity', 'broker/developers')) ?? [];
-    const domainById = new Map(dir.map((d) => [d.id, d.domain]));
-    return await Promise.all(
-      approved.map(async (a) => {
-        const domain = domainById.get(a.developerTenantId);
-        return {
-          name: a.developerName ?? `#${a.developerTenantId}`,
-          domain,
-          projects: domain ? await fetchDeveloperProjects(a.developerTenantId) : [],
-        };
-      }),
-    );
-  } catch {
-    return [];
-  }
 }
 
 export default async function LeadsPage() {

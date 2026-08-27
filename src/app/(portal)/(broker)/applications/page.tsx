@@ -1,6 +1,8 @@
+import { redirect } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { serverJson } from '@/server/api-client';
+import { env } from '@/lib/env';
 
 export const metadata = { title: 'طلباتي' };
 
@@ -27,6 +29,9 @@ const STATUS_LABEL: Record<AppStatus, string> = {
 const STATUS_TONE = { Pending: 'warning', Approved: 'success', Rejected: 'danger' } as const;
 
 export default async function ApplicationsPage() {
+  // Single-developer deployment tracks its one application on the home hub, not a list.
+  if (env.portal.singleDeveloper) redirect('/');
+
   let apps: BrokerApplication[] = [];
   let failed = false;
   try {

@@ -73,9 +73,12 @@ async function uploadFile(base: string, file: File): Promise<number | null> {
 export function BrokerProfileForm({
   initial,
   initialAttachments = [],
+  joinDeveloperTenantId,
 }: {
   initial?: BrokerProfileValues | null;
   initialAttachments?: BrokerAttachment[];
+  /** Guided-join mode: after a successful save, submit the application to this developer + go home. */
+  joinDeveloperTenantId?: number;
 }) {
   const router = useRouter();
   const toast = useToast();
@@ -177,8 +180,25 @@ export function BrokerProfileForm({
         setExtraFiles([]);
       }
 
-      toast.success('تم حفظ الملف بنجاح.');
       setFalFile(null);
+
+      // Guided join: profile is now complete → submit the application to the single developer.
+      if (joinDeveloperTenantId != null) {
+        const applied = await fetch('/api/identity/broker/applications', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ developerTenantId: joinDeveloperTenantId }),
+        })
+          .then((r) => r.ok)
+          .catch(() => false);
+        toast.success(
+          applied ? 'تم إرسال طلب انضمامك — سنُعلمك فور صدور القرار.' : 'تم حفظ ملفك.',
+        );
+        router.push('/');
+        return;
+      }
+
+      toast.success('تم حفظ الملف بنجاح.');
       router.refresh();
     } finally {
       setSaving(false);

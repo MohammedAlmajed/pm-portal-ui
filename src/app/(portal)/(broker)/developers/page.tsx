@@ -1,8 +1,10 @@
 import { Building2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card';
 import { ApplyButton } from '@/components/broker/ApplyButton';
+import { redirect } from 'next/navigation';
 import { serverJson } from '@/server/api-client';
 import { getBrokerStatus } from '@/server/broker-status';
+import { env } from '@/lib/env';
 
 type ApplicationStatus = 'Pending' | 'Approved' | 'Rejected';
 
@@ -25,6 +27,9 @@ interface Developer {
 }
 
 export default async function DevelopersPage() {
+  // Single-developer deployment has no directory — the home membership hub is the front door.
+  if (env.portal.singleDeveloper) redirect('/');
+
   let developers: Developer[] = [];
   let failed = false;
   try {

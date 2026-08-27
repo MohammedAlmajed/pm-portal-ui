@@ -3,31 +3,57 @@ import { UserCircle, Building2, FileText, Users, ArrowLeft, Lock } from 'lucide-
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { OnboardingSteps } from '@/components/broker/OnboardingSteps';
+import { MembershipHub } from '@/components/broker/MembershipHub';
 import { getBrokerStatus } from '@/server/broker-status';
+import { getSingleDeveloper, buildShareHub } from '@/server/share-hub';
+import { serverJson } from '@/server/api-client';
+import { env } from '@/lib/env';
+import { routes } from '@/lib/routes';
 
 export const metadata = { title: 'الرئيسية' };
 
-/**
- * Broker dashboard. Leads with the onboarding stepper (profile → apply → approval); the "active"
- * surfaces (leads / referral links) unlock only once a developer has approved the broker.
- */
 export default async function BrokerHomePage() {
   const status = await getBrokerStatus();
 
+  // Dedicated single-developer deployment → the membership hub (join front door / workspace).
+  if (env.portal.singleDeveloper) {
+    const dev = await getSingleDeveloper();
+    let shareDevelopers: Awaited<ReturnType<typeof buildShareHub>> = [];
+    let leadsCount = 0;
+    if (status.stage === 'approved') {
+      const approved = status.applications.filter((a) => a.status === 'Approved');
+      shareDevelopers = await buildShareHub(status.referralCode, approved);
+      try {
+        const leads = await serverJson<unknown[]>('identity', 'broker/leads');
+        leadsCount = leads?.length ?? 0;
+      } catch {
+        /* leads unavailable */
+      }
+    }
+    return (
+      <MembershipHub
+        status={status}
+        developerName={dev?.name ?? env.brand.name}
+        developerTenantId={dev?.id ?? null}
+        shareDevelopers={shareDevelopers}
+        leadsCount={leadsCount}
+      />
+    );
+  }
+
+  // Shared multi-developer portal → the marketplace dashboard.
   return (
     <div className="flex flex-col gap-6">
       <section>
         <h2 className="text-xl font-semibold text-foreground">مرحبًا بك 👋</h2>
-        <p className="mt-1 text-sm text-muted">
-          تابع خطوات انضمامك كوسيط معتمد أدناه.
-        </p>
+        <p className="mt-1 text-sm text-muted">تابع خطوات انضمامك كوسيط معتمد أدناه.</p>
       </section>
 
       <OnboardingSteps stage={status.stage} />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <QuickCard
-          href="/broker/profile"
+          href={routes.profile}
           icon={<UserCircle size={20} />}
           title="ملفي المهني"
           description="الاسم، الهوية، رخصة فال، سنوات الخبرة"
@@ -40,13 +66,13 @@ export default async function BrokerHomePage() {
           }
         />
         <QuickCard
-          href="/broker/developers"
+          href={routes.developers}
           icon={<Building2 size={20} />}
           title="المطوّرون"
           description="تصفّح المطوّرين وقدّم طلبك للانضمام"
         />
         <QuickCard
-          href="/broker/applications"
+          href={routes.applications}
           icon={<FileText size={20} />}
           title="طلباتي"
           description="تابع حالة الطلبات: قيد المراجعة / مقبول / مرفوض"
@@ -58,9 +84,8 @@ export default async function BrokerHomePage() {
             ) : undefined
           }
         />
-        {/* Leads unlocks on approval */}
         <QuickCard
-          href={status.hasApproved ? '/broker/leads' : undefined}
+          href={status.hasApproved ? routes.leads : undefined}
           icon={status.hasApproved ? <Users size={20} /> : <Lock size={20} />}
           title="العملاء المحتملون"
           description={
@@ -89,9 +114,7 @@ function QuickCard({
   badge?: React.ReactNode;
 }) {
   const inner = (
-    <Card
-      className={cnCard(!!href)}
-    >
+    <Card className={`h-full${href ? ' transition-shadow group-hover:shadow-md' : ''}`}>
       <CardHeader>
         <div className="flex items-center justify-between">
           <div className="flex h-10 w-10 items-center justify-center rounded-md bg-brand-subtle text-brand">
@@ -118,8 +141,4 @@ function QuickCard({
       {inner}
     </Link>
   );
-}
-
-function cnCard(clickable: boolean) {
-  return `h-full${clickable ? ' transition-shadow group-hover:shadow-md' : ''}`;
 }
