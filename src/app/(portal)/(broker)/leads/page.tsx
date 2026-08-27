@@ -6,7 +6,7 @@ import { OnboardingSteps } from '@/components/broker/OnboardingSteps';
 import { getBrokerStatus } from '@/server/broker-status';
 import { buildShareHub } from '@/server/share-hub';
 
-export const metadata = { title: 'العملاء المهتمّون' };
+export const metadata = { title: 'المهتمّين' };
 
 /**
  * The broker's own leads — interest requests attributed to this broker via their referral code.
@@ -48,9 +48,9 @@ export default async function LeadsPage() {
 
   const header = (
     <section>
-      <h2 className="text-xl font-semibold text-foreground">العملاء المهتمّون</h2>
+      <h2 className="text-xl font-semibold text-foreground">المهتمّين</h2>
       <p className="mt-1 text-sm text-muted">
-        العملاء الذين وصلوا عبر روابط الإحالة الخاصة بك، وحالة كل منهم.
+        من وصلوا عبر روابط الإحالة الخاصة بك، وحالة كل منهم.
       </p>
     </section>
   );
@@ -85,7 +85,7 @@ export default async function LeadsPage() {
 
       {/* KPI row — a fuller dashboard (charts) comes with the dataviz pass. */}
       <div className="grid gap-4 sm:grid-cols-3">
-        <Kpi label="إجمالي العملاء المهتمّين" value={leads.length} />
+        <Kpi label="إجمالي المهتمّين" value={leads.length} />
         <Kpi label="مهتمّون" value={interested} tone="success" />
         <Kpi
           label="نسبة الاهتمام"
@@ -94,10 +94,10 @@ export default async function LeadsPage() {
       </div>
 
       {failed ? (
-        <Card className="p-6 text-sm text-muted">تعذّر تحميل العملاء المهتمّين حاليًا.</Card>
+        <Card className="p-6 text-sm text-muted">تعذّر تحميل المهتمّين حاليًا.</Card>
       ) : leads.length === 0 ? (
         <Card className="flex flex-col items-center gap-2 p-10 text-center">
-          <p className="text-sm font-medium text-foreground">لا يوجد عملاء مهتمّون بعد</p>
+          <p className="text-sm font-medium text-foreground">لا يوجد مهتمّون بعد</p>
           <p className="max-w-sm text-sm text-muted">
             شارك رابط الإحالة الخاص بك — سيظهر هنا كل عميل يسجّل اهتمامه عبره.
           </p>

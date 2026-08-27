@@ -9,7 +9,7 @@ import { cn } from '@/lib/cn';
  * The broker's share hub: for each developer that approved them, a browsable list of that
  * developer's PUBLIC projects. Every link carries the broker's opaque referral code
  * (?broker=<guid>) plus UTM tags, so a lead submitted through it is attributed to the broker
- * and shows up in "العملاء المهتمّون". Public-project data comes from the developer's own
+ * and shows up in "المهتمّين". Public-project data comes from the developer's own
  * public endpoint (read with their tenant host) — no per-developer backend needed.
  */
 export interface ReferralProject {
@@ -140,7 +140,7 @@ export function ReferralLinks({
       </div>
       <p className="text-sm text-muted">
         اختر مطوّرًا وانسخ رابط أي مشروع لمشاركته — كل من يسجّل اهتمامه عبره يُنسب إليك ويظهر في
-        «العملاء المهتمّون».
+        «المهتمّين».
       </p>
 
       {withDomain.length === 0 ? (

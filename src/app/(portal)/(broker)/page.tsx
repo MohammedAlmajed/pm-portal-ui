@@ -87,10 +87,10 @@ export default async function BrokerHomePage() {
         <QuickCard
           href={status.hasApproved ? routes.leads : undefined}
           icon={status.hasApproved ? <Users size={20} /> : <Lock size={20} />}
-          title="العملاء المهتمّون"
+          title="المهتمّين"
           description={
             status.hasApproved
-              ? 'العملاء الذين وصلوا عبر روابط الإحالة الخاصة بك'
+              ? 'من وصلوا عبر روابط الإحالة الخاصة بك'
               : 'يُفتح بعد اعتماد أحد المطوّرين لطلبك'
           }
           badge={status.hasApproved ? undefined : <Badge tone="neutral">مقفل</Badge>}

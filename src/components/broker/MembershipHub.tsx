@@ -59,7 +59,7 @@ export function MembershipHub({
             <p className="max-w-md text-sm text-muted">
               استلمنا طلب انضمامك إلى <span className="font-medium text-foreground">{developerName}</span>
               {submittedAt ? <> بتاريخ <span className="num">{submittedAt}</span></> : null}. سنُعلمك فور
-              صدور القرار، وستفتح لك حينها روابط الإحالة ومتابعة العملاء.
+              صدور القرار، وستفتح لك حينها روابط الإحالة ومتابعة المهتمّين.
             </p>
           </div>
         </Card>
@@ -111,7 +111,7 @@ export function MembershipHub({
             انضمّ كوسيطٍ معتمد لدى {developerName}
           </h1>
           <p className="text-base leading-relaxed opacity-90 md:text-lg">
-            روّج مشاريعنا، تابِع عملاءك المهتمّين، واحصل على رابط إحالة خاص بك — يُنسب إليك كل عميل يصل عبره.
+            روّج مشاريعنا، تابِع المهتمّين، واحصل على رابط إحالة خاص بك — يُنسب إليك كل عميل يصل عبره.
           </p>
           <div className="mt-2">
             {profileReady && developerTenantId != null ? (
@@ -210,7 +210,7 @@ function ApprovedWorkspace({
             <span className="num text-3xl font-bold text-foreground">{leadsCount}</span>
           </div>
           <div>
-            <p className="text-sm font-semibold text-foreground">العملاء المهتمّون</p>
+            <p className="text-sm font-semibold text-foreground">المهتمّين</p>
             <p className="mt-0.5 text-xs text-muted">من وصلوا عبر روابط الإحالة الخاصة بك.</p>
           </div>
           <span className="inline-flex items-center gap-1 text-sm font-medium text-brand">
