@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { serverJson } from '@/server/api-client';
 import { env } from '@/lib/env';
+import { WithdrawButton } from '@/components/broker/WithdrawButton';
 
 export const metadata = { title: 'طلباتي' };
 
@@ -10,7 +11,7 @@ export const metadata = { title: 'طلباتي' };
  * Broker's applications across developers — one row per BrokerApplication, scoped to the
  * authenticated broker (backend filters by token sub). GET /broker/applications ([BrokerOnly]).
  */
-type AppStatus = 'Pending' | 'Approved' | 'Rejected';
+type AppStatus = 'Pending' | 'Approved' | 'Rejected' | 'Revoked' | 'Withdrawn';
 
 interface BrokerApplication {
   id: number;
@@ -25,8 +26,16 @@ const STATUS_LABEL: Record<AppStatus, string> = {
   Pending: 'قيد المراجعة',
   Approved: 'مقبول',
   Rejected: 'مرفوض',
+  Revoked: 'أُلغي الاعتماد',
+  Withdrawn: 'مسحوب',
 };
-const STATUS_TONE = { Pending: 'warning', Approved: 'success', Rejected: 'danger' } as const;
+const STATUS_TONE = {
+  Pending: 'warning',
+  Approved: 'success',
+  Rejected: 'danger',
+  Revoked: 'warning',
+  Withdrawn: 'neutral',
+} as const;
 
 export default async function ApplicationsPage() {
   // Single-developer deployment tracks its one application on the home hub, not a list.
@@ -72,11 +81,14 @@ export default async function ApplicationsPage() {
                     day: 'numeric',
                   })}
                 </p>
-                {a.status === 'Rejected' && a.rejectionReason ? (
+                {(a.status === 'Rejected' || a.status === 'Revoked') && a.rejectionReason ? (
                   <p className="mt-0.5 text-xs text-danger">{a.rejectionReason}</p>
                 ) : null}
               </div>
-              <Badge tone={STATUS_TONE[a.status]}>{STATUS_LABEL[a.status]}</Badge>
+              <div className="flex flex-col items-end gap-1.5">
+                <Badge tone={STATUS_TONE[a.status]}>{STATUS_LABEL[a.status]}</Badge>
+                {a.status === 'Pending' ? <WithdrawButton applicationId={a.id} /> : null}
+              </div>
             </div>
           ))}
         </Card>

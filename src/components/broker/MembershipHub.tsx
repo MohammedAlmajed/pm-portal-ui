@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { JoinButton } from '@/components/broker/JoinButton';
+import { WithdrawButton } from '@/components/broker/WithdrawButton';
 import { ReferralLinks, type ReferralDeveloper } from '@/components/broker/ReferralLinks';
 import type { BrokerStatus } from '@/server/broker-status';
 
@@ -35,6 +36,7 @@ export function MembershipHub({
   leadsCount: number;
 }) {
   const submittedAt = latestSubmittedAt(status);
+  const pendingId = status.applications.find((a) => a.status === 'Pending')?.id;
 
   if (status.stage === 'approved') {
     return (
@@ -62,6 +64,7 @@ export function MembershipHub({
               صدور القرار، وستفتح لك حينها روابط الإحالة ومتابعة المهتمّين.
             </p>
           </div>
+          {pendingId ? <WithdrawButton applicationId={pendingId} /> : null}
         </Card>
       </div>
     );

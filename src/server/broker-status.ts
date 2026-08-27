@@ -58,6 +58,7 @@ export async function getBrokerStatus(): Promise<BrokerStatus> {
   const approvedCount = applications.filter((a) => a.status === 'Approved').length;
   const pendingCount = applications.filter((a) => a.status === 'Pending').length;
   const rejectedCount = applications.filter((a) => a.status === 'Rejected').length;
+  const revokedCount = applications.filter((a) => a.status === 'Revoked').length;
   const hasApproved = approvedCount > 0;
 
   let stage: BrokerStage;
@@ -65,7 +66,9 @@ export async function getBrokerStatus(): Promise<BrokerStatus> {
   else if (applications.length === 0) stage = 'no-applications';
   else if (hasApproved) stage = 'approved';
   else if (pendingCount > 0) stage = 'pending';
-  else stage = 'rejected-only';
+  // A revoked (or rejected) broker can re-apply; a withdrawn-only broker starts fresh.
+  else if (rejectedCount > 0 || revokedCount > 0) stage = 'rejected-only';
+  else stage = 'no-applications';
 
   return {
     profileComplete,
