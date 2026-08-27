@@ -23,6 +23,11 @@ export interface BrokerProfileValues {
   yearsOfExperience: number | string;
   falLicenseNumber?: string;
   falLicenseMediaId?: number;
+  // FAL registry verification (from GET /broker/profile). Advisory; may be absent until verified.
+  falLicenseStatus?: string | null;
+  falLicenseExpiry?: string | null;
+  falLicenseHolderName?: string | null;
+  falLicenseVerifiedAt?: string | null;
 }
 export interface BrokerAttachment {
   id: number;

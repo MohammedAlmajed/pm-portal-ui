@@ -5,6 +5,7 @@ import {
   type BrokerAttachment,
 } from '@/components/broker/BrokerProfileForm';
 import { serverJson } from '@/server/api-client';
+import { FalVerificationBadge } from '@/components/broker/FalVerificationBadge';
 
 export const metadata = { title: 'الملف الشخصي' };
 
@@ -32,6 +33,14 @@ export default async function BrokerProfilePage() {
           هذا الملف يُبنى مرة واحدة ويُستخدم عند التقديم لأي مطوّر.
         </p>
       </section>
+
+      {initial?.falLicenseNumber ? (
+        <FalVerificationBadge
+          status={initial.falLicenseStatus}
+          expiry={initial.falLicenseExpiry}
+          holderName={initial.falLicenseHolderName}
+        />
+      ) : null}
 
       <Card>
         <CardHeader>
