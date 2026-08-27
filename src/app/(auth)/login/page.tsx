@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card';
 import { env } from '@/lib/env';
+import { BrandLogo } from '@/components/layout/BrandLogo';
 
 const ERRORS: Record<string, string> = {
   state_mismatch: 'انتهت صلاحية الجلسة. يرجى تسجيل الدخول من جديد.',
@@ -22,8 +23,8 @@ export default async function LoginPage({
     <div className="flex min-h-screen items-center justify-center bg-canvas p-6">
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <div className="mb-2 flex h-11 w-11 items-center justify-center rounded-lg bg-brand text-on-brand">
-            <span className="text-lg font-bold">{env.brand.mark}</span>
+          <div className="mb-2">
+            <BrandLogo logoUrl={env.brand.logoUrl} mark={env.brand.mark} alt={env.brand.name} size="lg" />
           </div>
           <CardTitle>{env.brand.name}</CardTitle>
           <CardDescription>سجّل الدخول للوصول إلى ملفك وطلباتك.</CardDescription>

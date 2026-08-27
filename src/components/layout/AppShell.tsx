@@ -10,6 +10,7 @@ export function AppShell({
   title,
   brandLabel,
   brandMark,
+  brandLogoUrl,
   navItems,
   userName,
   children,
@@ -17,13 +18,14 @@ export function AppShell({
   title: string;
   brandLabel: string;
   brandMark: string;
+  brandLogoUrl?: string;
   navItems: NavItem[];
   userName?: string;
   children: React.ReactNode;
 }) {
   return (
     <div className="flex min-h-screen bg-canvas">
-      <SideNav items={navItems} brandLabel={brandLabel} brandMark={brandMark} />
+      <SideNav items={navItems} brandLabel={brandLabel} brandMark={brandMark} brandLogoUrl={brandLogoUrl} />
       <div className="flex min-w-0 flex-1 flex-col">
         <TopBar
           title={title}
@@ -31,6 +33,7 @@ export function AppShell({
           navItems={navItems}
           brandLabel={brandLabel}
           brandMark={brandMark}
+          brandLogoUrl={brandLogoUrl}
         />
         <main className="flex-1 p-5 md:p-8">
           <div className="mx-auto w-full max-w-6xl">{children}</div>

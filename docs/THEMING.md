@@ -90,6 +90,7 @@ server-side, threaded to components; no `NEXT_PUBLIC` baking. Empty = keep the d
 | `BRAND_NAME` | full name (titles, login card) |
 | `BRAND_SHORT` | sidebar label |
 | `BRAND_MARK` | logo glyph in the brand chip |
+| `BRAND_LOGO_URL` | logo IMAGE url (replaces the glyph chip in nav + auth cards) |
 | `BRAND_DESCRIPTION` | `<meta name=description>` |
 | `BRAND_THEME_COLOR` | `<meta theme-color>` (browser chrome / PWA) |
 | `BRAND_COLOR` / `_HOVER` / `_ACTIVE` / `_SUBTLE` / `_BORDER` | `--pm-brand*` overrides |

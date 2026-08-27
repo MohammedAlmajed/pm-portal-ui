@@ -71,6 +71,10 @@ export const env = {
     get mark() {
       return optional('BRAND_MARK', 'و');
     },
+    /** Optional logo image URL. When set, it replaces the glyph chip in the nav + auth cards. */
+    get logoUrl() {
+      return optional('BRAND_LOGO_URL');
+    },
     get description() {
       return optional('BRAND_DESCRIPTION', 'بوابة الوسطاء العقاريين — التسجيل ومتابعة الطلبات');
     },

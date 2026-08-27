@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X, LayoutDashboard } from 'lucide-react';
 import { ICONS, type NavItem } from './SideNav';
+import { BrandLogo } from './BrandLogo';
 import { cn } from '@/lib/cn';
 
 /**
@@ -16,10 +17,12 @@ export function MobileNav({
   items,
   brandLabel,
   brandMark,
+  brandLogoUrl,
 }: {
   items: NavItem[];
   brandLabel: string;
   brandMark: string;
+  brandLogoUrl?: string;
 }) {
   const pathname = usePathname();
   const [open, setOpen] = React.useState(false);
@@ -51,10 +54,11 @@ export function MobileNav({
         >
           <div className="flex h-16 items-center justify-between px-4">
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-brand text-on-brand">
-                <span className="text-sm font-bold">{brandMark}</span>
-              </div>
-              <Dialog.Title className="text-sm font-semibold text-foreground">
+              <BrandLogo logoUrl={brandLogoUrl} mark={brandMark} alt={brandLabel} size="sm" />
+              {/* Keep Dialog.Title for a11y; hide it visually when the logo already shows the name. */}
+              <Dialog.Title
+                className={brandLogoUrl ? 'sr-only' : 'text-sm font-semibold text-foreground'}
+              >
                 {brandLabel}
               </Dialog.Title>
             </div>

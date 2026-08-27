@@ -11,6 +11,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/cn';
+import { BrandLogo } from './BrandLogo';
 
 /**
  * Client-side icon registry. Nav items cross the server→client boundary as plain
@@ -35,10 +36,12 @@ export function SideNav({
   items,
   brandLabel,
   brandMark,
+  brandLogoUrl,
 }: {
   items: NavItem[];
   brandLabel: string;
   brandMark: string;
+  brandLogoUrl?: string;
 }) {
   const pathname = usePathname();
   // Only the MOST SPECIFIC matching item is active, so the section root ("/broker")
@@ -50,10 +53,11 @@ export function SideNav({
   return (
     <aside className="hidden w-64 shrink-0 flex-col border-e border-border bg-surface md:flex">
       <div className="flex h-16 items-center gap-2 px-5">
-        <div className="flex h-8 w-8 items-center justify-center rounded-md bg-brand text-on-brand">
-          <span className="text-sm font-bold">{brandMark}</span>
-        </div>
-        <span className="text-sm font-semibold text-foreground">{brandLabel}</span>
+        <BrandLogo logoUrl={brandLogoUrl} mark={brandMark} alt={brandLabel} size="sm" />
+        {/* The logo image usually carries the name; only show the text label when there's no logo. */}
+        {!brandLogoUrl && (
+          <span className="text-sm font-semibold text-foreground">{brandLabel}</span>
+        )}
       </div>
 
       <nav className="flex flex-1 flex-col gap-1 p-3">

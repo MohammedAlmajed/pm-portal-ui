@@ -26,6 +26,7 @@ export default async function BrokerLayout({ children }: { children: React.React
       title={env.brand.name}
       brandLabel={env.brand.short}
       brandMark={env.brand.mark}
+      brandLogoUrl={env.brand.logoUrl}
       navItems={NAV}
       userName={session.name}
     >
