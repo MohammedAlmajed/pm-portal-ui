@@ -79,11 +79,17 @@ export function BrokerProfileForm({
   initial,
   initialAttachments = [],
   joinDeveloperTenantId,
+  submitLabel,
+  confirmNotice,
 }: {
   initial?: BrokerProfileValues | null;
   initialAttachments?: BrokerAttachment[];
   /** Guided-join mode: after a successful save, submit the application to this developer + go home. */
   joinDeveloperTenantId?: number;
+  /** Overrides the button label (e.g. "أرسِل الطلب" in the onboarding gate). */
+  submitLabel?: string;
+  /** When set, shows a warning + a required acknowledgment checkbox before the button enables. */
+  confirmNotice?: string;
 }) {
   const router = useRouter();
   const toast = useToast();
@@ -91,6 +97,7 @@ export function BrokerProfileForm({
   const [falFile, setFalFile] = React.useState<File | null>(null);
   const [falError, setFalError] = React.useState<string | undefined>();
   const [extraFiles, setExtraFiles] = React.useState<File[]>([]);
+  const [ack, setAck] = React.useState(false);
 
   const hasFalOnRecord = !!initial?.falLicenseMediaId;
 
@@ -280,10 +287,27 @@ export function BrokerProfileForm({
         </ul>
       )}
 
-      <div>
-        <Button type="submit" disabled={saving}>
-          {saving ? 'جارٍ الحفظ…' : 'حفظ الملف'}
-        </Button>
+      <div className="flex flex-col gap-3">
+        {confirmNotice ? (
+          <label className="flex items-start gap-2 rounded-lg border border-warning/30 bg-warning-subtle p-3 text-sm text-foreground">
+            <input
+              type="checkbox"
+              checked={ack}
+              onChange={(e) => setAck(e.target.checked)}
+              className="mt-0.5 h-4 w-4 shrink-0 accent-brand"
+            />
+            <span>{confirmNotice}</span>
+          </label>
+        ) : null}
+        <div>
+          <Button type="submit" disabled={saving || (!!confirmNotice && !ack)}>
+            {saving
+              ? submitLabel
+                ? 'جارٍ الإرسال…'
+                : 'جارٍ الحفظ…'
+              : (submitLabel ?? 'حفظ الملف')}
+          </Button>
+        </div>
       </div>
     </form>
   );
