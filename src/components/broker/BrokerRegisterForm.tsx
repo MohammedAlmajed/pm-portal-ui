@@ -44,8 +44,14 @@ export function BrokerRegisterForm() {
         body: JSON.stringify(values),
       });
       if (res.ok) {
-        toast.success('تم إنشاء حسابك. سجّل الدخول لإكمال ملفك.');
-        router.push('/login?registered=1');
+        const data = await res.json().catch(() => ({}));
+        if (data?.emailVerificationRequired) {
+          toast.success('تم إنشاء حسابك. تحقّق من بريدك الإلكتروني لتفعيل الحساب.');
+          router.push('/login?verify=1');
+        } else {
+          toast.success('تم إنشاء حسابك. سجّل الدخول لإكمال ملفك.');
+          router.push('/login?registered=1');
+        }
       } else if (res.status === 409) {
         toast.error('البريد الإلكتروني أو رقم الهوية مسجّل مسبقًا.');
       } else {

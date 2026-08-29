@@ -13,9 +13,9 @@ const ERRORS: Record<string, string> = {
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ returnTo?: string; error?: string; registered?: string }>;
+  searchParams: Promise<{ returnTo?: string; error?: string; registered?: string; verify?: string }>;
 }) {
-  const { returnTo = '/', error, registered } = await searchParams;
+  const { returnTo = '/', error, registered, verify } = await searchParams;
   const loginHref = `/api/auth/login?returnTo=${encodeURIComponent(returnTo)}`;
   const errorMsg = error ? (ERRORS[error] ?? 'حدث خطأ أثناء تسجيل الدخول.') : null;
 
@@ -30,7 +30,11 @@ export default async function LoginPage({
           <CardDescription>سجّل الدخول للوصول إلى ملفك وطلباتك.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          {registered ? (
+          {verify ? (
+            <p className="rounded-md bg-success-subtle px-3 py-2 text-sm text-success">
+              تم إنشاء حسابك. أرسلنا رابط تفعيل إلى بريدك الإلكتروني — فعّل حسابك ثم سجّل الدخول.
+            </p>
+          ) : registered ? (
             <p className="rounded-md bg-success-subtle px-3 py-2 text-sm text-success">
               تم إنشاء حسابك بنجاح. سجّل الدخول لإكمال ملفك.
             </p>
