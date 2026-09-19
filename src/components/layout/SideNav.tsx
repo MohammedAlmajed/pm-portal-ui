@@ -8,6 +8,7 @@ import {
   Building2,
   FileText,
   Users,
+  Briefcase,
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/cn';
@@ -23,6 +24,7 @@ export const ICONS: Record<string, LucideIcon> = {
   profile: UserCircle,
   developers: Building2,
   applications: FileText,
+  projects: Briefcase,
   leads: Users,
 };
 

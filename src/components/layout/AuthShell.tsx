@@ -1,14 +1,14 @@
 import * as React from 'react';
-import { Link2, LineChart, BadgeCheck } from 'lucide-react';
+import { BadgeCheck, Building2, ClipboardList } from 'lucide-react';
 import { env } from '@/lib/env';
 import { BrandLogo } from '@/components/layout/BrandLogo';
 
-// What a broker actually gets on this platform — grounds the welcome panel in real capabilities
-// (referral share hub, lead attribution, per-developer approval) rather than generic marketing.
+// What a broker actually gets on this platform — a management module: apply once, get approved by
+// the developer, then see the projects you're authorized to work. (No referral/lead framing.)
 const BENEFITS = [
-  { icon: Link2, title: 'روابط إحالة خاصة بك', body: 'شارك مشاريع المطوّرين برابطك، وكل عميل يصل عبره يُنسب إليك.' },
-  { icon: LineChart, title: 'متابعة عملائك أولًا بأول', body: 'تابع حالة كل عميل محال من التسجيل حتى الإغلاق في مكان واحد.' },
-  { icon: BadgeCheck, title: 'اعتماد سريع من المطوّرين', body: 'قدّم طلبك مرة واحدة، وابدأ فور اعتمادك من كل مطوّر.' },
+  { icon: BadgeCheck, title: 'اعتماد من المطوّر', body: 'قدّم طلب انضمامك مرة واحدة، وابدأ فور اعتمادك.' },
+  { icon: Building2, title: 'مشاريعك في مكان واحد', body: 'اطّلع على المشاريع المعتمدة لك للعمل عليها.' },
+  { icon: ClipboardList, title: 'متابعة طلباتك', body: 'تابع حالة طلب انضمامك خطوةً بخطوة.' },
 ];
 
 /**
@@ -26,7 +26,10 @@ export function AuthShell({ children }: { children: React.ReactNode }) {
             <div aria-hidden className="pointer-events-none absolute -start-20 -top-20 h-64 w-64 rounded-full bg-on-brand/10 blur-2xl" />
             <div aria-hidden className="pointer-events-none absolute -bottom-24 -end-16 h-72 w-72 rounded-full bg-on-brand/5 blur-2xl" />
             <div className="relative">
-              <BrandLogo logoUrl={env.brand.logoUrl} mark={env.brand.mark} alt={env.brand.name} size="lg" />
+              {/* White chip so a colored/white-label logo stays legible on the brand panel. */}
+              <span className="inline-flex rounded-xl bg-white p-3 shadow-sm">
+                <BrandLogo logoUrl={env.brand.logoUrl} mark={env.brand.mark} alt={env.brand.name} size="lg" />
+              </span>
               <h2 className="mt-8 text-3xl font-bold leading-tight">انضم إلى شبكة الوسطاء</h2>
               <p className="mt-3 max-w-sm text-sm leading-relaxed text-on-brand/80">{env.brand.description}</p>
             </div>
