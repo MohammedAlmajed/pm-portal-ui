@@ -58,10 +58,12 @@ export async function fetchDeveloperProjects(
   }
 }
 
-/** Build the referral share hub for the broker's APPROVED developers (directory + public projects). */
+/** Build the referral share hub for the broker's APPROVED developers (directory + public projects).
+ * When a developer limited the broker to a subset of projects (assignedProjectIds non-empty), only
+ * those projects are shared; an empty/absent list means no restriction (all public projects). */
 export async function buildShareHub(
   code: string | undefined,
-  approved: { developerTenantId: number; developerName?: string }[],
+  approved: { developerTenantId: number; developerName?: string; assignedProjectIds?: number[] }[],
 ): Promise<ReferralDeveloper[]> {
   if (!code || !approved.length) return [];
   const dir = await getDevelopers();
@@ -69,10 +71,13 @@ export async function buildShareHub(
   return Promise.all(
     approved.map(async (a) => {
       const domain = domainById.get(a.developerTenantId);
+      const all = domain ? await fetchDeveloperProjects(a.developerTenantId) : [];
+      const allowed = a.assignedProjectIds ?? [];
+      const projects = allowed.length ? all.filter((p) => allowed.includes(p.id)) : all;
       return {
         name: a.developerName ?? `#${a.developerTenantId}`,
         domain,
-        projects: domain ? await fetchDeveloperProjects(a.developerTenantId) : [],
+        projects,
       };
     }),
   );

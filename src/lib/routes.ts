@@ -16,4 +16,4 @@ export const routes = {
 } as const;
 
 /** Paths that do NOT require a session (everything else in the app does). */
-export const PUBLIC_PATHS = ['/login', '/register', '/forbidden'] as const;
+export const PUBLIC_PATHS = ['/login', '/register', '/registered', '/forbidden'] as const;
