@@ -59,11 +59,11 @@ export async function fetchDeveloperProjects(
 }
 
 /** Build the referral share hub for the broker's APPROVED developers (directory + public projects).
- * When a developer limited the broker to a subset of projects (assignedProjectIds non-empty), only
- * those projects are shared; an empty/absent list means no restriction (all public projects). */
+ * Scope follows the developer's explicit choice: 'All' shares every public project; 'Specific' shares
+ * only the assigned ids (an empty allow-list in Specific mode therefore shares nothing). */
 export async function buildShareHub(
   code: string | undefined,
-  approved: { developerTenantId: number; developerName?: string; assignedProjectIds?: number[] }[],
+  approved: { developerTenantId: number; developerName?: string; projectAccessMode?: 'All' | 'Specific'; assignedProjectIds?: number[] }[],
 ): Promise<ReferralDeveloper[]> {
   if (!code || !approved.length) return [];
   const dir = await getDevelopers();
@@ -73,7 +73,8 @@ export async function buildShareHub(
       const domain = domainById.get(a.developerTenantId);
       const all = domain ? await fetchDeveloperProjects(a.developerTenantId) : [];
       const allowed = a.assignedProjectIds ?? [];
-      const projects = allowed.length ? all.filter((p) => allowed.includes(p.id)) : all;
+      const projects =
+        a.projectAccessMode === 'Specific' ? all.filter((p) => allowed.includes(p.id)) : all;
       return {
         name: a.developerName ?? `#${a.developerTenantId}`,
         domain,
