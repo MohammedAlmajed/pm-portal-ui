@@ -58,10 +58,12 @@ export async function fetchDeveloperProjects(
   }
 }
 
-/** Build the referral share hub for the broker's APPROVED developers (directory + public projects). */
+/** Build the referral share hub for the broker's APPROVED developers (directory + public projects).
+ * Scope follows the developer's explicit choice: 'All' shares every public project; 'Specific' shares
+ * only the assigned ids (an empty allow-list in Specific mode therefore shares nothing). */
 export async function buildShareHub(
   code: string | undefined,
-  approved: { developerTenantId: number; developerName?: string }[],
+  approved: { developerTenantId: number; developerName?: string; projectAccessMode?: 'All' | 'Specific'; assignedProjectIds?: number[] }[],
 ): Promise<ReferralDeveloper[]> {
   if (!code || !approved.length) return [];
   const dir = await getDevelopers();
@@ -69,10 +71,14 @@ export async function buildShareHub(
   return Promise.all(
     approved.map(async (a) => {
       const domain = domainById.get(a.developerTenantId);
+      const all = domain ? await fetchDeveloperProjects(a.developerTenantId) : [];
+      const allowed = a.assignedProjectIds ?? [];
+      const projects =
+        a.projectAccessMode === 'Specific' ? all.filter((p) => allowed.includes(p.id)) : all;
       return {
         name: a.developerName ?? `#${a.developerTenantId}`,
         domain,
-        projects: domain ? await fetchDeveloperProjects(a.developerTenantId) : [],
+        projects,
       };
     }),
   );

@@ -20,6 +20,10 @@ export interface BrokerApplicationItem {
   status: 'Pending' | 'Approved' | 'Rejected' | string;
   submittedAt: string;
   rejectionReason?: string;
+  /** 'All' = every public project; 'Specific' = limited to assignedProjectIds. */
+  projectAccessMode?: 'All' | 'Specific';
+  /** Project ids the developer limited this broker to (used when projectAccessMode is 'Specific'). */
+  assignedProjectIds?: number[];
 }
 
 export interface BrokerStatus {

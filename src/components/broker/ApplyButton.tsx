@@ -55,8 +55,7 @@ export function ApplyButton({
       });
       if (res.ok) {
         setState('sent');
-        toast.success('تم إرسال طلبك إلى المطوّر.');
-        router.refresh();
+        router.push('/application-submitted');
         return;
       }
       const detail = String(((await res.json().catch(() => ({}))) as { detail?: string }).detail ?? '');

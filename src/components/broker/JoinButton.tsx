@@ -33,8 +33,7 @@ export function JoinButton({
         body: JSON.stringify({ developerTenantId }),
       });
       if (res.ok) {
-        toast.success('تم إرسال طلبك — سنُعلمك فور صدور القرار.');
-        router.refresh();
+        router.push('/application-submitted');
         return;
       }
       const detail = String(
