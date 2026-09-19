@@ -15,6 +15,7 @@ const NAV_ALL: NavItem[] = [
   { href: routes.profile, label: 'الملف الشخصي', icon: 'profile' },
   { href: routes.developers, label: 'المطوّرون', icon: 'developers' },
   { href: routes.applications, label: 'طلباتي', icon: 'applications' },
+  { href: routes.projects, label: 'مشاريعي', icon: 'projects' },
 ];
 const NAV_SINGLE: NavItem[] = NAV_ALL.filter(
   (i) => i.href !== routes.developers && i.href !== routes.applications,

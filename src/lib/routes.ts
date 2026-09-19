@@ -11,6 +11,7 @@ export const routes = {
   profile: '/profile',
   developers: '/developers',
   applications: '/applications',
+  projects: '/projects',
   leads: '/leads',
   join: '/join',
 } as const;
