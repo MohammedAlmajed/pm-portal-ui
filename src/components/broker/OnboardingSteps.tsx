@@ -43,7 +43,7 @@ const HEADLINE: Record<BrokerStage, { title: string; desc: string }> = {
   },
   pending: {
     title: 'طلبك قيد المراجعة',
-    desc: 'بانتظار قرار المطوّر. ستتفعّل صفحة المهتمّين وروابط الإحالة بعد الاعتماد.',
+    desc: 'بانتظار قرار المطوّر. ستُتاح لك المشاريع المعتمدة بعد الاعتماد.',
   },
   'rejected-only': {
     title: 'لم يتم اعتمادك بعد',
@@ -51,7 +51,7 @@ const HEADLINE: Record<BrokerStage, { title: string; desc: string }> = {
   },
   approved: {
     title: 'تم اعتمادك 🎉',
-    desc: 'أصبحت وسيطًا معتمدًا. شارك روابط الإحالة وتابع المهتمّين.',
+    desc: 'أصبحت وسيطًا معتمدًا. اطّلع على المشاريع المتاحة لك.',
   },
 };
 
@@ -60,7 +60,7 @@ const CTA: Record<BrokerStage, { href: string; label: string } | null> = {
   'no-applications': { href: '/developers', label: 'تصفّح المطوّرين' },
   pending: { href: '/applications', label: 'متابعة طلباتي' },
   'rejected-only': { href: '/developers', label: 'التقديم إلى مطوّر آخر' },
-  approved: { href: '/leads', label: 'عرض المهتمّين' },
+  approved: { href: '/', label: 'عرض المشاريع' },
 };
 
 function StepDot({ state, Icon }: { state: StepState; Icon: typeof UserCircle }) {

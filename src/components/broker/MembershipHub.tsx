@@ -5,48 +5,38 @@ import {
   ArrowLeft,
   UserCircle,
   FileCheck,
-  Share2,
-  Users,
+  Briefcase,
   RotateCcw,
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { JoinButton } from '@/components/broker/JoinButton';
 import { WithdrawButton } from '@/components/broker/WithdrawButton';
-import { ReferralLinks, type ReferralDeveloper } from '@/components/broker/ReferralLinks';
+import type { ReferralDeveloper } from '@/components/broker/ReferralLinks';
 import type { BrokerStatus } from '@/server/broker-status';
 
 /**
  * The single-developer membership hub — the home of a dedicated broker portal. The portal IS one
  * developer, so joining is the front door (not a directory to browse). Branches on the broker's
- * stage: join → pending → (approved workspace | rejected). Design is deliberately subject-grounded:
- * a bold brand hero with a building motif, a real membership progression, and the approved state
- * turns into a "promote our projects" workspace.
+ * stage: join → pending → (approved workspace | rejected). This is a management module: once
+ * approved, the broker sees the projects they're authorized to work — read-only, for information
+ * and record. (Deal/sales flows come later.)
  */
 export function MembershipHub({
   status,
   developerName,
   developerTenantId,
-  shareDevelopers,
-  leadsCount,
+  developers,
 }: {
   status: BrokerStatus;
   developerName: string;
   developerTenantId: number | null;
-  shareDevelopers: ReferralDeveloper[];
-  leadsCount: number;
+  developers: ReferralDeveloper[];
 }) {
   const submittedAt = latestSubmittedAt(status);
   const pendingId = status.applications.find((a) => a.status === 'Pending')?.id;
 
   if (status.stage === 'approved') {
-    return (
-      <ApprovedWorkspace
-        developerName={developerName}
-        referralCode={status.referralCode}
-        shareDevelopers={shareDevelopers}
-        leadsCount={leadsCount}
-      />
-    );
+    return <ApprovedWorkspace developerName={developerName} developers={developers} />;
   }
 
   if (status.stage === 'pending') {
@@ -61,7 +51,7 @@ export function MembershipHub({
             <p className="max-w-md text-sm text-muted">
               استلمنا طلب انضمامك إلى <span className="font-medium text-foreground">{developerName}</span>
               {submittedAt ? <> بتاريخ <span className="num">{submittedAt}</span></> : null}. سنُعلمك فور
-              صدور القرار، وستفتح لك حينها روابط الإحالة ومتابعة المهتمّين.
+              صدور القرار، وستُتاح لك حينها المشاريع المعتمدة للعمل عليها.
             </p>
           </div>
           {pendingId ? <WithdrawButton applicationId={pendingId} /> : null}
@@ -114,7 +104,7 @@ export function MembershipHub({
             انضمّ كوسيطٍ معتمد لدى {developerName}
           </h1>
           <p className="text-base leading-relaxed opacity-90 md:text-lg">
-            روّج مشاريعنا، تابِع المهتمّين، واحصل على رابط إحالة خاص بك — يُنسب إليك كل عميل يصل عبره.
+            قدّم طلب انضمامك، وبعد اعتمادك تُتاح لك مشاريع المطوّر للعمل عليها.
           </p>
           <div className="mt-2">
             {profileReady && developerTenantId != null ? (
@@ -142,7 +132,7 @@ export function MembershipHub({
             done={status.profileComplete}
           />
           <Step icon={<FileCheck size={20} />} title="نراجع طلبك" body="يراجع فريق المطوّر طلبك ويصدر قراره." />
-          <Step icon={<Share2 size={20} />} title="ابدأ المشاركة والكسب" body="شارك روابط المشاريع وتابع عملاءك." />
+          <Step icon={<Briefcase size={20} />} title="ابدأ العمل" body="بعد الاعتماد تُتاح لك المشاريع المعتمدة." />
         </div>
       </section>
     </div>
@@ -177,15 +167,14 @@ function Step({
 
 function ApprovedWorkspace({
   developerName,
-  referralCode,
-  shareDevelopers,
-  leadsCount,
+  developers,
 }: {
   developerName: string;
-  referralCode?: string;
-  shareDevelopers: ReferralDeveloper[];
-  leadsCount: number;
+  developers: ReferralDeveloper[];
 }) {
+  // In a single-developer portal this is one developer; flatten to the projects the broker may work.
+  const projects = developers.flatMap((d) => d.projects);
+
   return (
     <div className="flex flex-col gap-6">
       <section className="animate-fade-up flex flex-col gap-1">
@@ -195,32 +184,36 @@ function ApprovedWorkspace({
         <h1 className="mt-2 text-2xl font-bold text-foreground">
           مرحبًا بك في مساحة عملك لدى {developerName}
         </h1>
-        <p className="text-sm text-muted">شارك مشاريعنا عبر رابطك الخاص، وتابع كل عميل يصل من خلاله.</p>
+        <p className="text-sm text-muted">هذه المشاريع المعتمدة لك للعمل عليها.</p>
       </section>
 
-      <div className="grid gap-4 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <ReferralLinks code={referralCode} developers={shareDevelopers} />
-        </div>
-        <Link
-          href="/leads"
-          className="group flex flex-col justify-between gap-4 rounded-xl border border-border bg-surface p-5 transition-shadow hover:shadow-md"
-        >
-          <div className="flex items-center justify-between">
+      <Card className="animate-fade-up-2 flex flex-col gap-4 p-5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
             <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-subtle text-brand">
-              <Users size={20} />
+              <Briefcase size={20} />
             </span>
-            <span className="num text-3xl font-bold text-foreground">{leadsCount}</span>
+            <h2 className="text-sm font-semibold text-foreground">المشاريع المتاحة لك</h2>
           </div>
-          <div>
-            <p className="text-sm font-semibold text-foreground">المهتمّين</p>
-            <p className="mt-0.5 text-xs text-muted">من وصلوا عبر روابط الإحالة الخاصة بك.</p>
-          </div>
-          <span className="inline-flex items-center gap-1 text-sm font-medium text-brand">
-            عرض الكل <ArrowLeft size={16} />
-          </span>
-        </Link>
-      </div>
+          <span className="num text-sm font-medium text-muted">{projects.length}</span>
+        </div>
+
+        {projects.length === 0 ? (
+          <p className="text-sm text-muted">لا توجد مشاريع متاحة لك حاليًا. تواصل مع المطوّر لمعرفة المزيد.</p>
+        ) : (
+          <ul className="grid gap-2 sm:grid-cols-2">
+            {projects.map((p) => (
+              <li
+                key={p.id}
+                className="flex items-center gap-2 rounded-lg border border-border bg-surface px-3 py-2.5 text-sm text-foreground"
+              >
+                <Building2 size={16} className="shrink-0 text-muted" aria-hidden />
+                <span className="truncate">{p.name}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Card>
     </div>
   );
 }
