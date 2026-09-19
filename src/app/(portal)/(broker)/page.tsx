@@ -1,12 +1,11 @@
 import Link from 'next/link';
-import { UserCircle, Building2, FileText, Users, ArrowLeft, Lock } from 'lucide-react';
+import { UserCircle, Building2, FileText, ArrowLeft } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { OnboardingSteps } from '@/components/broker/OnboardingSteps';
 import { MembershipHub } from '@/components/broker/MembershipHub';
 import { getBrokerStatus } from '@/server/broker-status';
 import { getSingleDeveloper, buildShareHub } from '@/server/share-hub';
-import { serverJson } from '@/server/api-client';
 import { env } from '@/lib/env';
 import { routes } from '@/lib/routes';
 
@@ -18,25 +17,17 @@ export default async function BrokerHomePage() {
   // Dedicated single-developer deployment → the membership hub (join front door / workspace).
   if (env.portal.singleDeveloper) {
     const dev = await getSingleDeveloper();
-    let shareDevelopers: Awaited<ReturnType<typeof buildShareHub>> = [];
-    let leadsCount = 0;
+    let developers: Awaited<ReturnType<typeof buildShareHub>> = [];
     if (status.stage === 'approved') {
       const approved = status.applications.filter((a) => a.status === 'Approved');
-      shareDevelopers = await buildShareHub(status.referralCode, approved);
-      try {
-        const leads = await serverJson<unknown[]>('identity', 'broker/leads');
-        leadsCount = leads?.length ?? 0;
-      } catch {
-        /* leads unavailable */
-      }
+      developers = await buildShareHub(status.referralCode, approved);
     }
     return (
       <MembershipHub
         status={status}
         developerName={dev?.name ?? env.brand.name}
         developerTenantId={dev?.id ?? null}
-        shareDevelopers={shareDevelopers}
-        leadsCount={leadsCount}
+        developers={developers}
       />
     );
   }
@@ -83,17 +74,6 @@ export default async function BrokerHomePage() {
               <Badge tone="info">{`${status.pendingCount} قيد المراجعة`}</Badge>
             ) : undefined
           }
-        />
-        <QuickCard
-          href={status.hasApproved ? routes.leads : undefined}
-          icon={status.hasApproved ? <Users size={20} /> : <Lock size={20} />}
-          title="المهتمّين"
-          description={
-            status.hasApproved
-              ? 'من وصلوا عبر روابط الإحالة الخاصة بك'
-              : 'يُفتح بعد اعتماد أحد المطوّرين لطلبك'
-          }
-          badge={status.hasApproved ? undefined : <Badge tone="neutral">مقفل</Badge>}
         />
       </div>
     </div>
