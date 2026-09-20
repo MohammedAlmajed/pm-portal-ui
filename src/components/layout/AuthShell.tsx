@@ -7,8 +7,9 @@ import { BrandLogo } from '@/components/layout/BrandLogo';
 // the developer, then see the projects you're authorized to work. (No referral/lead framing.)
 const BENEFITS = [
   { icon: BadgeCheck, title: 'اعتماد من المطوّر', body: 'قدّم طلب انضمامك مرة واحدة، وابدأ فور اعتمادك.' },
-  { icon: Building2, title: 'مشاريعك في مكان واحد', body: 'اطّلع على المشاريع المعتمدة لك للعمل عليها.' },
   { icon: ClipboardList, title: 'متابعة طلباتك', body: 'تابع حالة طلب انضمامك خطوةً بخطوة.' },
+  { icon: Building2, title: 'مشاريعك في مكان واحد', body: 'اطّلع على المشاريع المعتمدة لك للعمل عليها.' },
+
 ];
 
 /**
@@ -30,7 +31,7 @@ export function AuthShell({ children }: { children: React.ReactNode }) {
               <span className="inline-flex rounded-xl bg-white p-3 shadow-sm">
                 <BrandLogo logoUrl={env.brand.logoUrl} mark={env.brand.mark} alt={env.brand.name} size="lg" />
               </span>
-              <h2 className="mt-8 text-3xl font-bold leading-tight">انضم إلى شبكة الوسطاء</h2>
+              <h2 className="mt-8 text-3xl font-bold leading-tight">انضم إلى شبكة الوسطاء العقاريين</h2>
               <p className="mt-3 max-w-sm text-sm leading-relaxed text-on-brand/80">{env.brand.description}</p>
             </div>
             <ul className="relative flex flex-col gap-6">
