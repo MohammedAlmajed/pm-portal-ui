@@ -37,9 +37,6 @@
 /* RTL/logical utilities (ms-, me-, ps-, pe-, start-, end-, border-s/e) are
  * NATIVE in Tailwind v4 with dir="rtl" — no plugin needed. */
 
-/* Dark variant keys off data-theme on <html> (set by ThemeProvider). */
-@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
-
 /* ─── Expose semantic tokens to Tailwind v4 ──────────────────────────────────
  * `inline` makes each utility reference the CSS var at runtime (so tenant/theme
  * overrides cascade live) instead of baking the value in at build time.
