@@ -1,8 +1,11 @@
 # Theming & Design Tokens
 
 This app is **fully tokenized**. Every color, radius, shadow, and font is a **named CSS
-variable**, so switching theme (light/dark) or reskinning a tenant is a pure CSS cascade —
-no rebuild, no component changes.
+variable**, so reskinning a tenant is a pure CSS cascade — no rebuild, no component changes.
+
+> **Light-only.** The portal renders in light mode; there is no dark theme and no theme
+> toggle. `data-theme="light"` is fixed on `<html>`. The `data-theme` mechanism is kept
+> only so a named theme *could* be reintroduced later.
 
 ## The three layers
 
@@ -13,7 +16,7 @@ SEMANTIC    (--pm-canvas, --pm-surface, --pm-brand…)  what components read
     ↓ exposed to Tailwind via @theme inline (index.css)
 UTILITIES   (bg-brand, text-muted, border-border…)    what you write in JSX
     ↓ overridden by
-THEME/TENANT ([data-theme="dark"], [data-tenant="x"]) reskins
+TENANT      ([data-tenant="x"])                       reskins
 ```
 
 **Components only ever touch the semantic layer** (through Tailwind utilities). Never read a
@@ -41,12 +44,11 @@ primitive (`--pm-c-brand-600`) or a raw hex directly.
 Radii: `rounded-{xs,sm,md,lg,xl,2xl}` ← `--pm-radius-*`.
 Shadows: `shadow-{sm,md,lg}` ← `--pm-shadow-*`.
 
-## Switch the THEME (light ⇄ dark)
+## Add a named THEME (optional — none ship today)
 
-`ThemeProvider` sets `data-theme` on `<html>`. Dark values live in the
-`[data-theme="dark"]` block in `tokens.css` and override **only the semantic layer**.
-Add a new named theme by adding a `[data-theme="..."]` block that redefines the same
-semantic tokens.
+The app is light-only, but the mechanism remains: add a `[data-theme="..."]` block in
+`tokens.css` that redefines the semantic tokens, then set `data-theme` on `<html>`.
+(`ThemeProvider` currently pins it to `"light"`.)
 
 ## Reskin a TENANT (change the colors)
 
@@ -77,7 +79,6 @@ Buttons, links, badges, focus rings, and active nav all follow `--pm-brand` auto
 
 - **Never hardcode a hex in a component.** If you need a color that doesn't exist, add a
   named semantic token first.
-- Keep dark + light in sync when you add a semantic token.
 - Prefer `-subtle` background + solid `text-*` for status pills (see `Badge`).
 
 ## White-label a dedicated deployment (env-driven, same image)
@@ -96,6 +97,6 @@ server-side, threaded to components; no `NEXT_PUBLIC` baking. Empty = keep the d
 | `BRAND_COLOR` / `_HOVER` / `_ACTIVE` / `_SUBTLE` / `_BORDER` | `--pm-brand*` overrides |
 | `BRAND_RING` | focus ring `--pm-ring` |
 
-Colors are injected as `:root,:root[data-theme="dark"]{ … }` on the server-rendered
+Colors are injected as `:root{ … }` on the server-rendered
 `<html>` — buttons, links, focus rings, active nav all follow. Pages that show branding
 are `force-dynamic` so the values reflect the deploy's ConfigMap, not build time.

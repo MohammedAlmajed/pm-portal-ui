@@ -2,66 +2,27 @@
 
 import * as React from 'react';
 
-type Theme = 'light' | 'dark';
-
-interface ThemeContextValue {
-  theme: Theme;
-  setTheme: (t: Theme) => void;
-  toggle: () => void;
-}
-
-const ThemeContext = React.createContext<ThemeContextValue | null>(null);
-
-const STORAGE_KEY = 'pm-portal-theme';
-
 /**
- * Applies the active theme (data-theme) and optional tenant (data-tenant) to
- * <html>. Both are just attribute switches — the actual colors live in CSS
- * tokens (see src/styles/tokens.css), so switching theme/tenant is a pure CSS
- * cascade with no re-render of styles.
+ * The portal renders in light mode only. Dark mode was removed — we no longer
+ * read a stored choice or the OS `prefers-color-scheme`, so the app stays light
+ * regardless of the visitor's system setting. Still applies an optional
+ * per-tenant attribute for white-label reskins (see src/styles/tokens.css).
  */
 export function ThemeProvider({
   children,
   tenant,
-  defaultTheme = 'light',
 }: {
   children: React.ReactNode;
   tenant?: string;
-  defaultTheme?: Theme;
 }) {
-  const [theme, setThemeState] = React.useState<Theme>(defaultTheme);
-
   React.useEffect(() => {
-    const stored = window.localStorage.getItem(STORAGE_KEY) as Theme | null;
-    const initial =
-      stored ??
-      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-    setThemeState(initial);
+    // Defensive: guarantee light even if an older build left data-theme="dark".
+    document.documentElement.dataset.theme = 'light';
   }, []);
-
-  React.useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-    window.localStorage.setItem(STORAGE_KEY, theme);
-  }, [theme]);
 
   React.useEffect(() => {
     if (tenant) document.documentElement.dataset.tenant = tenant;
   }, [tenant]);
 
-  const value = React.useMemo<ThemeContextValue>(
-    () => ({
-      theme,
-      setTheme: setThemeState,
-      toggle: () => setThemeState((t) => (t === 'dark' ? 'light' : 'dark')),
-    }),
-    [theme],
-  );
-
-  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
-}
-
-export function useTheme(): ThemeContextValue {
-  const ctx = React.useContext(ThemeContext);
-  if (!ctx) throw new Error('useTheme must be used within <ThemeProvider>');
-  return ctx;
+  return <>{children}</>;
 }

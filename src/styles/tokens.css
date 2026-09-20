@@ -134,41 +134,7 @@
   --pm-shadow-lg: 0 4px 8px rgba(15, 23, 42, 0.06), 0 24px 48px -20px rgba(15, 23, 42, 0.24);
 }
 
-/* ─── 3a. DARK THEME ───────────────────────────────────────────────────────
- * Overrides ONLY the semantic layer. Toggled by data-theme="dark" on <html>.
- */
-[data-theme='dark'] {
-  --pm-canvas: var(--pm-c-neutral-950);
-  --pm-surface: #0d1526;
-  --pm-surface-raised: #131d33;
-  --pm-surface-sunken: #0a1120;
-  --pm-overlay: rgba(2, 4, 10, 0.6);
-
-  --pm-foreground: var(--pm-c-neutral-100);
-  --pm-muted: var(--pm-c-neutral-400);
-  --pm-subtle: var(--pm-c-neutral-500);
-  --pm-inverse: var(--pm-c-neutral-900);
-
-  --pm-border: #1f2a40;
-  --pm-border-strong: #2b3852;
-  --pm-ring: var(--pm-c-brand-400);
-
-  --pm-brand: var(--pm-c-brand-500);
-  --pm-brand-hover: var(--pm-c-brand-400);
-  --pm-brand-active: var(--pm-c-brand-300);
-  --pm-brand-subtle: rgba(99, 102, 241, 0.14);
-  --pm-brand-border: rgba(99, 102, 241, 0.32);
-  --pm-on-brand: #ffffff;
-
-  --pm-success-subtle: rgba(22, 163, 74, 0.16);
-  --pm-warning-subtle: rgba(217, 119, 6, 0.16);
-  --pm-danger-subtle: rgba(220, 38, 38, 0.16);
-  --pm-info-subtle: rgba(37, 99, 235, 0.16);
-
-  --pm-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --pm-shadow-md: 0 2px 4px rgba(0, 0, 0, 0.4), 0 8px 24px -12px rgba(0, 0, 0, 0.6);
-  --pm-shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.45), 0 24px 48px -20px rgba(0, 0, 0, 0.7);
-}
+/* Dark theme removed — the portal is light-only. */
 
 /* ─── 3b. PER-TENANT OVERRIDE (example) ────────────────────────────────────
  * A tenant reskins by overriding a FEW named tokens. Do it via a

@@ -20,19 +20,17 @@ export function generateViewport(): Viewport {
 
 /**
  * Root layout. Arabic/RTL-first and STATIC (dir/lang are fixed — this app has no
- * locale negotiation). Theme is applied client-side by ThemeProvider onto <html>.
+ * locale negotiation). The portal is light-only: data-theme="light" is fixed here.
  */
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const brandVars = env.brand.cssVars;
   return (
     <html lang="ar" dir="rtl" data-theme="light" suppressHydrationWarning>
       <body className="min-h-screen bg-canvas text-foreground antialiased">
-        {/* White-label brand color: override the semantic --pm-brand* tokens for both themes.
+        {/* White-label brand color: override the semantic --pm-brand* tokens.
             Server-rendered from env, so no FOUC and no rebuild per client. */}
         {brandVars ? (
-          <style
-            dangerouslySetInnerHTML={{ __html: `:root,:root[data-theme="dark"]{${brandVars}}` }}
-          />
+          <style dangerouslySetInnerHTML={{ __html: `:root{${brandVars}}` }} />
         ) : null}
         <ThemeProvider>
           <ToastProvider>{children}</ToastProvider>
