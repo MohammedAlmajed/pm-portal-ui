@@ -215,7 +215,11 @@ export function BrokerProfileForm({
             toast.info('تم حفظ ملفك. يمكنك الانضمام من الصفحة الرئيسية.');
           }
         }
+        // Navigate home AND refresh: the onboarding gate lives in the shared server
+        // layout, so a plain push() reuses the cached (stale) layout and re-shows the
+        // form. refresh() re-runs getBrokerStatus() → stage 'pending' → PendingView.
         router.push('/');
+        router.refresh();
         return;
       }
 
